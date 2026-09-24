@@ -14,6 +14,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
 rel="stylesheet">
 
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <link rel="stylesheet" href="../CSS/TelaReembolsos.css">
 
 </head>
@@ -27,62 +30,84 @@ rel="stylesheet">
 
 <!-- ================= SIDEBAR ================= -->
 
-
 <aside class="sidebar" id="sidebar">
 
-
 <a href="TelaADM.html" class="logo">
-    <i data-icon="layers"></i>
+    <i class="fa-solid fa-layer-group"></i>
     <span>Vaga</span>Connect
 </a>
 
+    <nav>
 
-<nav>
+        <a href="../HTML/TelaADM.html">
+            <i data-icon="grid"></i>Dashboard
+        </a>
 
-    <a href="../HTML/TelaADM.html"><i data-icon="grid"></i>Dashboard</a>
+        <a href="../HTML/TelaEstacionamento.html">
+            <i data-icon="building"></i>Estacionamentos
+        </a>
 
-    <a href="../HTML/TelaEstacionamento.html"><i data-icon="building"></i>Estacionamentos</a>
+        <a href="../HTML/TelaVagas.html">
+            <i data-icon="car"></i>Vagas
+        </a>
 
-    <a href="../HTML/TelaVagas.html"><i data-icon="car"></i>Vagas</a>
+        <a href="../HTML/TelaReservas.html">
+            <i data-icon="calendar"></i>Reservas
+        </a>
 
-    <a href="../HTML/TelaReservas.html"><i data-icon="calendar"></i>Reservas</a>
+        <a href="../HTML/TelaUsuarios.html">
+            <i data-icon="users"></i>Usuários
+        </a>
 
-    <a href="../HTML/TelaUsuarios.html"><i data-icon="users"></i>Usuários</a>
+        <a href="../HTML/TelaFuncionarios.html">
+            <i data-icon="briefcase"></i>Funcionários
+        </a>
 
-    <a href="../HTML/TelaFuncionarios.html"><i data-icon="briefcase"></i>Funcionários</a>
+        <a href="../HTML/TelaProrrongações.html">
+            <i data-icon="clock"></i>Prorrogações
+        </a>
 
-    <a href="../HTML/TelaProrrongações.html"><i data-icon="clock"></i>Prorrogações</a>
+        <a href="../HTML/TelaFeedback.html">
+            <i data-icon="message"></i>Feedbacks
+        </a>
 
-    <a href="../HTML/TelaFeedback.html"><i data-icon="message"></i>Feedbacks</a>
+        <!-- ITEM ATIVO -->
+        <a class="active" href="#">
+            <i data-icon="refund"></i>Reembolsos
+        </a>
 
-    <a class="active" href="#"><i data-icon="refund"></i>Reembolsos</a>
+        <a href="../HTML/TelaPagamentos.html">
+            <i data-icon="credit-card"></i>Pagamento Taxa
+        </a>
 
-    <a href="../HTML/TelaPagamentos.html"><i data-icon="credit-card"></i>Pagamento Taxa</a>
+        <a href="../HTML/TelaPagamentosTempo.html">
+            <i data-icon="credit-card"></i>Pagamento Tempo
+        </a>
 
-    <a href="../HTML/TelaPagamentosTempo.html"><i data-icon="credit-card"></i>Pagamento Tempo</a>
+        <a href="../HTML/TelaFaturamento.html">
+            <i data-icon="chart"></i>Faturamento
+        </a>
 
-    <a href="../HTML/TelaFaturamento.html"><i data-icon="chart"></i>Faturamento</a>
+        <a href="../HTML/TelaConfigurações.html">
+            <i data-icon="settings"></i>Configurações
+        </a>
 
-    <a href="../HTML/TelaConfigurações.html"><i data-icon="settings"></i>Configurações</a>
+        <a href="#" id="btnSair">
+            <i data-icon="log-out"></i>Sair
+        </a>
 
-    <a href="#" id="btnSair"><i data-icon="log-out"></i>Sair</a>
+    </nav>
 
-</nav>
+    <div class="profile">
 
+        <div class="avatar" id="inicialAdm">A</div>
 
-<div class="profile">
+        <div>
+            <strong id="nomeAdm">Administrador</strong>
+            <small id="cargoAdm">admin</small>
+        </div>
 
-    <span class="avatar" id="inicialAdm">A</span>
-
-    <div>
-        <strong id="nomeAdm">Administrador</strong>
-        <small id="cargoAdm">admin</small>
     </div>
-
-    <i data-icon="more-vertical"></i>
-
-</div>
-
 
 </aside>
 

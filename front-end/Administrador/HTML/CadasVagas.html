@@ -103,11 +103,6 @@
               </select>
             </label>
 
-            <label class="field">
-              Preço da vaga (R$)
-              <input name="price" type="number" min="0" step="0.01" placeholder="Ex.: 25,00" required>
-            </label>
-
             <label class="field field-wide">
               Status
               <select name="status">
@@ -340,6 +335,19 @@
       }
 
     });
+
+    document.querySelector("#cancelButton").addEventListener("click", () => {
+
+    const preenchido = [...formularioVaga.elements]
+        .some(campo => campo.type !== "submit"
+                    && campo.type !== "button"
+                    && campo.value.trim() !== "");
+
+    if(preenchido && !confirm("Sair sem salvar? Os dados preenchidos serão perdidos.")) return;
+
+    window.location.href = "TelaVagas.html";
+
+});
   </script>
 </body>
 

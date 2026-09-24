@@ -199,7 +199,9 @@ textarea:focus-visible{
     color:var(--azul-claro);
 
 }
-
+.logo i {
+    color: #8cc2ff;
+}
 
 .sidebar nav{
 

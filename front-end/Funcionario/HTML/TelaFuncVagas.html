@@ -70,7 +70,6 @@
               <tr>
                 <th>NÚMERO</th>
                 <th>TIPO</th>
-                <th>PREÇO</th>
                 <th>STATUS</th>
               </tr>
             </thead>
@@ -134,7 +133,6 @@
         <tr>
           <td><b>${vaga.numero}</b></td>
           <td>${vaga.tipo}</td>
-          <td>${mostrarPreco(vaga.preco)}</td>
           <td>
             <select class="acao-status" onchange="alterarStatus('${vaga.id}', this.value)">
               <option ${vaga.status === "Livre" ? "selected" : ""}>Livre</option>
@@ -166,7 +164,6 @@
               numero: vaga.numero,
               tipo: vaga.tipo,
               status,
-              preco: vaga.preco,
               fk_est: vaga.fk_est
             })
           });
