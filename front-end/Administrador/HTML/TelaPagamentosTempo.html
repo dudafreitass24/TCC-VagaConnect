@@ -273,7 +273,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
 
 <script src="../../Base/JS/sessao.js"></script>
-
+<script src="../../Base/JS/cobranca.js"></script>
 <script>
 
 /* ícones em SVG, iguais aos das outras telas do painel */
@@ -344,9 +344,10 @@ document.querySelectorAll("i[data-icon]").forEach(function(elemento){
    estacionamentos, com filtro por pátio.
 
    Regra do valor:
-   valor do tempo = horas iniciadas x preço da vaga
+   valor do tempo = minutos usados x (preço da vaga / 60)
    a pagar        = valor do tempo - o que já foi pago
-                    (a taxa da reserva entra como crédito)
+                    pela vaga (a garantia não conta como
+                    crédito de tempo)
 ===================================================== */
 
 
@@ -370,10 +371,6 @@ if(!administrador){
     throw new Error("sem sessão");
 
 }
-
-
-// tolerância antes de começar a cobrar (em minutos)
-const CORTESIA = 15;
 
 
 let modoLocal  = false;
@@ -447,13 +444,13 @@ const modalConfirmar= document.getElementById("modalConfirmar");
 
 (function mostrarPerfil(){
 
-    const nome = administrador.nome || "Funcionário";
+    const nome = administrador.nome || "Administrador";
 
-    document.getElementById("nomeFuncionario").textContent    = nome;
+    document.getElementById("nomeAdm").textContent    = nome;
 
-    document.getElementById("inicialFuncionario").textContent = nome.charAt(0).toUpperCase();
+    document.getElementById("inicialAdm").textContent = nome.charAt(0).toUpperCase();
 
-    document.getElementById("cargoFuncionario").textContent   = funcionario.cargo || "Recepcionista";
+    document.getElementById("cargoAdm").textContent   = administrador.cargo || "admin";
 
 })();
 
@@ -545,43 +542,18 @@ function pendenciaDe(id){
 
 function calcular(item){
 
-    const vaga = item.reserva.vaga;
+    const conta = Cobranca.calcularUso(item);
 
-    const tarifa = Number(vaga.preco || 0);
-
-
-    const entrada = new Date(item.hora);
-
-    const ativa   = item.reserva.status === "Ativa";
-
-
-    // enquanto está no pátio conta até agora; depois, até a saída
-    const fim = ativa
-
-        ? new Date()
-
-        : new Date(item.horaSaida || item.hora);
-
-
-    let minutos = Math.max(0, Math.floor((fim - entrada) / 60000));
-
-
-    // cortesia inicial
-    const cobraveis = Math.max(0, minutos - CORTESIA);
-
-
-    // cobra por hora iniciada
-    const horas = cobraveis === 0 ? 0 : Math.ceil(cobraveis / 60);
-
-
-    const valorTempo = horas * tarifa;
-
-    const pago       = totalPago(item);
-
-    const aPagar     = Math.max(0, Math.round((valorTempo - pago) * 100) / 100);
-
-
-    return { tarifa, minutos, horas, valorTempo, pago, aPagar, ativa };
+    return {
+        tarifa: conta.precoHora,
+        precoMinuto: conta.precoMinuto,
+        minutos: conta.minutosUsados,
+        valorTempo: conta.valorUsado,
+        pago: conta.pago,
+        aPagar: conta.aPagar,
+        reembolso: conta.reembolso,
+        ativa: conta.ativa
+    };
 
 }
 
@@ -781,7 +753,7 @@ function salvarPendencia(item, nota){
 
             criadoEm:      new Date().toISOString(),
 
-            registradoPor: administrador.nome || "Funcionário"
+            registradoPor: administrador.nome || "Administrador"
 
         });
 
@@ -860,7 +832,7 @@ function abrirJanela(id, acao){
 
         <div>
             <span>Tempo</span>
-            <strong>${conta.horas}h × ${mostrarPreco(conta.tarifa)}</strong>
+            <strong>${Cobranca.mostrarDuracao(conta.minutos)} × ${mostrarPreco(conta.precoMinuto)}</strong>
         </div>
 
         <div>
@@ -1154,9 +1126,9 @@ function render(){
                 ${mostrarDuracao(conta.minutos)}
             </td>
 
-            <td class="tarifa">${mostrarPreco(conta.tarifa)}/h</td>
+            <td class="tarifa">${mostrarPreco(conta.precoMinuto)}/min</td>
 
-            <td class="permanencia">${conta.horas}h</td>
+            <td class="permanencia">${Cobranca.mostrarDuracao(conta.minutos)}</td>
 
             <td class="pago">${mostrarPreco(conta.pago)}</td>
 
@@ -1359,6 +1331,889 @@ function aviso(tom, titulo, texto){
     while(caixaAvisos.children.length > 3) caixaAvisos.firstElementChild.remove();
 
 }
+
+/* =====================================================
+   VagaConnect · modo claro · Uso das vagas
+
+   Injeta o CSS claro na página e cria o botão de sol/lua
+   no canto. O escuro continua sendo o padrão, e a escolha
+   vale para as outras telas também.
+===================================================== */
+
+(function(){
+
+    "use strict";
+
+
+    console.log("[tema] uso das vagas carregado");
+
+
+    const CHAVE = "vagaconnect-tema";
+
+
+    /* =================================================
+       O CSS DO MODO CLARO
+
+       O seu TelaPagamentosTempo.css tem cor escura cravada
+       em vários pontos (os campos, as células, a sidebar
+       do celular), então trocar só os tokens não alcança.
+       O !important está apenas nesses pontos, e só dentro
+       do tema claro.
+    ================================================= */
+
+    const estilo = `
+
+    html[data-tema="claro"]{
+
+        --tinta:#eef3f9;  --superficie:#ffffff;  --elevado:#f4f8fd;
+
+        --risco:rgba(20,60,100,.14);   --risco-forte:rgba(20,60,100,.3);
+
+        --texto:#0b2036;  --apagado:#46627f;  --fraco:#6d89a6;
+
+        --azul:#1b5fd9;   --azul-claro:#1257c7;
+
+        --verde:#0a7a4c;  --ambar:#8a5605;  --vermelho:#a82222;
+
+        color-scheme: light;
+
+    }
+
+
+    /* ---------- fundo ---------- */
+
+    html[data-tema="claro"] body{
+
+        color:#0b2036 !important;
+
+        background:
+            repeating-linear-gradient(0deg,  rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+            repeating-linear-gradient(90deg, rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+            linear-gradient(180deg, #f7fafd 0%, #eef3f9 60%) !important;
+
+        background-attachment:fixed !important;
+
+    }
+
+    html[data-tema="claro"] ::selection{ background:rgba(27,95,217,.2); }
+
+
+    /* ---------- sidebar ---------- */
+
+    html[data-tema="claro"] .sidebar{
+
+        background:#ffffff !important;
+
+        box-shadow:0 10px 30px rgba(20,60,100,.07);
+
+    }
+
+    html[data-tema="claro"] .logo{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .logo i,
+    html[data-tema="claro"] .logo span,
+    html[data-tema="claro"] .logo svg{ color:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .sidebar nav a{ color:#46627f !important; }
+
+    html[data-tema="claro"] .sidebar nav a svg{ color:#64809c !important; }
+
+    html[data-tema="claro"] .sidebar nav a:hover{
+
+        background:rgba(27,95,217,.09) !important;
+
+        color:#0b2036 !important;
+
+    }
+
+    html[data-tema="claro"] .sidebar nav a:hover svg{ color:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .sidebar nav .active{
+
+        background:rgba(27,95,217,.13) !important;
+
+        color:#0b2036 !important;
+
+    }
+
+    html[data-tema="claro"] .sidebar nav .active svg{ color:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .sidebar nav a::before{ background:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .sidebar nav a#btnSair:hover{
+
+        background:rgba(198,47,47,.09) !important;
+
+        color:#a82222 !important;
+
+    }
+
+    html[data-tema="claro"] .sidebar nav a#btnSair:hover svg{ color:#c62f2f !important; }
+
+
+    /* ---------- perfil ---------- */
+
+    html[data-tema="claro"] .avatar{
+
+        background:linear-gradient(135deg,#2a72ea,#1b5fd9) !important;
+
+        border-color:transparent !important;
+
+        color:#ffffff !important;
+
+        box-shadow:0 6px 16px rgba(27,95,217,.24);
+
+    }
+
+    html[data-tema="claro"] .profile strong{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .profile small,
+    html[data-tema="claro"] .profile > svg{ color:#6d89a6 !important; }
+
+
+    /* ---------- topo ---------- */
+
+    html[data-tema="claro"] .topbar h1{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .topbar p{ color:#6d89a6 !important; }
+
+    html[data-tema="claro"] .primary-button{
+
+        border-color:#1b5fd9 !important;
+
+        color:#1b5fd9 !important;
+
+    }
+
+    html[data-tema="claro"] .primary-button::before{ background:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .primary-button:hover{ color:#ffffff !important; }
+
+    html[data-tema="claro"] .menu-button{
+
+        border-color:rgba(20,60,100,.3) !important;
+
+        color:#46627f !important;
+
+    }
+
+    html[data-tema="claro"] .menu-button:hover{
+
+        background:rgba(27,95,217,.1) !important;
+
+        border-color:#1b5fd9 !important;
+
+        color:#1b5fd9 !important;
+
+    }
+
+
+    /* ---------- cards ---------- */
+
+    html[data-tema="claro"] .cards{
+
+        border-color:rgba(20,60,100,.14) !important;
+
+        background:rgba(20,60,100,.14) !important;
+
+    }
+
+    html[data-tema="claro"] .card{ background:#ffffff !important; }
+
+    html[data-tema="claro"] .card:hover{ background:#f4f8fd !important; }
+
+    html[data-tema="claro"] .card span,
+    html[data-tema="claro"] .card p{ color:#6d89a6 !important; }
+
+    html[data-tema="claro"] .card h2{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .card:first-child{
+
+        box-shadow:inset 2px 0 0 #1b5fd9 !important;
+
+    }
+
+    html[data-tema="claro"] .card:first-child h2{ color:#164da8 !important; }
+
+    html[data-tema="claro"] .card:nth-child(2) h2{ color:#8a5605 !important; }
+
+    html[data-tema="claro"] .card:nth-child(3) h2{ color:#0a7a4c !important; }
+
+    html[data-tema="claro"] .card:nth-child(4) h2{ color:#a82222 !important; }
+
+
+    /* ---------- painel e filtros ---------- */
+
+    html[data-tema="claro"] .panel{
+
+        border-color:rgba(20,60,100,.14) !important;
+
+        background:#ffffff !important;
+
+        box-shadow:0 10px 28px rgba(20,60,100,.07);
+
+    }
+
+    html[data-tema="claro"] .toolbar{
+
+        border-bottom-color:rgba(20,60,100,.14) !important;
+
+    }
+
+    html[data-tema="claro"] .toolbar label:not(.search-box){ color:#6d89a6 !important; }
+
+    html[data-tema="claro"] .toolbar label:not(.search-box):focus-within{ color:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .toolbar select{
+
+        border-color:rgba(20,60,100,.22) !important;
+
+        background:#ffffff !important;
+
+        color:#0b2036 !important;
+
+        color-scheme: light !important;
+
+    }
+
+    html[data-tema="claro"] .toolbar select option{
+
+        background:#ffffff !important;
+
+        color:#0b2036 !important;
+
+    }
+
+    html[data-tema="claro"] .toolbar select:focus{
+
+        background:#ffffff !important;
+
+        border-color:#1b5fd9 !important;
+
+        box-shadow:inset 2px 0 0 #1b5fd9 !important;
+
+    }
+
+    html[data-tema="claro"] .search-box{
+
+        border-color:rgba(20,60,100,.22) !important;
+
+        background:#ffffff !important;
+
+        color:#7b95ae !important;
+
+    }
+
+    html[data-tema="claro"] .search-box:focus-within{
+
+        background:#ffffff !important;
+
+        border-color:#1b5fd9 !important;
+
+        box-shadow:inset 2px 0 0 #1b5fd9 !important;
+
+        color:#1b5fd9 !important;
+
+    }
+
+    html[data-tema="claro"] .search-box input{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .search-box input::placeholder{ color:#8ba1b8 !important; }
+
+
+    /* ---------- tabela ---------- */
+
+    html[data-tema="claro"] th{
+
+        border-bottom-color:rgba(20,60,100,.2) !important;
+
+        background:#f1f6fc !important;
+
+        color:#6d89a6 !important;
+
+    }
+
+    html[data-tema="claro"] td{
+
+        border-bottom-color:rgba(20,60,100,.1) !important;
+
+        color:#132c46 !important;
+
+    }
+
+    html[data-tema="claro"] tbody tr:hover{
+
+        background:rgba(27,95,217,.055) !important;
+
+    }
+
+    html[data-tema="claro"] .vazio{ color:#6d89a6 !important; }
+
+    html[data-tema="claro"] .table-count{
+
+        border-top-color:rgba(20,60,100,.14) !important;
+
+        color:#6d89a6 !important;
+
+    }
+
+
+    /* ---------- colunas ---------- */
+
+    html[data-tema="claro"] .patio,
+    html[data-tema="claro"] .permanencia,
+    html[data-tema="claro"] .tarifa,
+    html[data-tema="claro"] .pago{ color:#46627f !important; }
+
+    html[data-tema="claro"] .vaga{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .cliente strong{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .cliente small{ color:#6d89a6 !important; }
+
+    /* o tempo que ainda está correndo, com a bolinha */
+    html[data-tema="claro"] .permanencia.correndo{ color:#164da8 !important; }
+
+    html[data-tema="claro"] .permanencia.correndo::before{ background:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .apagar.deve{ color:#8a5605 !important; }
+
+    html[data-tema="claro"] .apagar.quitado{ color:#0a7a4c !important; }
+
+    html[data-tema="claro"] .nota{ color:#6d89a6 !important; }
+
+
+    /* ---------- situações ----------
+       No seu CSS estas quatro classes vêm soltas, sem o
+       .status na frente, e com rgba cravada.
+    */
+
+    html[data-tema="claro"] .status{
+
+        border-color:rgba(20,60,100,.3) !important;
+
+        color:#46627f !important;
+
+    }
+
+    html[data-tema="claro"] .emuso{
+
+        border-color:rgba(27,95,217,.3) !important;
+
+        background:rgba(27,95,217,.1) !important;
+
+        color:#164da8 !important;
+
+    }
+
+    html[data-tema="claro"] .apagarstatus{
+
+        border-color:rgba(168,106,6,.3) !important;
+
+        background:rgba(168,106,6,.1) !important;
+
+        color:#8a5605 !important;
+
+    }
+
+    html[data-tema="claro"] .pagostatus{
+
+        border-color:rgba(15,157,99,.32) !important;
+
+        background:rgba(15,157,99,.1) !important;
+
+        color:#0a7a4c !important;
+
+    }
+
+    html[data-tema="claro"] .pendentestatus{
+
+        border-color:rgba(198,47,47,.3) !important;
+
+        background:rgba(198,47,47,.1) !important;
+
+        color:#a82222 !important;
+
+    }
+
+
+    /* ---------- botões da linha ---------- */
+
+    html[data-tema="claro"] .row-actions button{
+
+        border-color:rgba(20,60,100,.2) !important;
+
+        color:#46627f !important;
+
+    }
+
+    html[data-tema="claro"] .row-actions .cobrar{
+
+        border-color:rgba(15,157,99,.4) !important;
+
+        background:rgba(15,157,99,.07) !important;
+
+        color:#0a7a4c !important;
+
+    }
+
+    html[data-tema="claro"] .row-actions .cobrar:hover{
+
+        border-color:#0f9d63 !important;
+
+        background:#0f9d63 !important;
+
+        color:#ffffff !important;
+
+    }
+
+    html[data-tema="claro"] .row-actions .pendencia{
+
+        border-color:rgba(168,106,6,.38) !important;
+
+        background:rgba(168,106,6,.07) !important;
+
+        color:#8a5605 !important;
+
+    }
+
+    html[data-tema="claro"] .row-actions .pendencia:hover{
+
+        border-color:#a86a06 !important;
+
+        background:#a86a06 !important;
+
+        color:#ffffff !important;
+
+    }
+
+    html[data-tema="claro"] .sem-acao{ color:#6d89a6 !important; }
+
+
+    /* ---------- janela ----------
+       O --c vem do script, nos tons do escuro (#3ddc97 e
+       #f5b731). Estilo inline o CSS não sobrescreve, então
+       eu escureço o uso dele com color-mix.
+    */
+
+    html[data-tema="claro"] .modal-fundo{
+
+        background:rgba(20,48,80,.45) !important;
+
+    }
+
+    html[data-tema="claro"] .modal{
+
+        border-color:rgba(20,60,100,.14) !important;
+
+        border-top-color:color-mix(in srgb, var(--c,#1b5fd9) 68%, #0b2036) !important;
+
+        background:#ffffff !important;
+
+        box-shadow:0 24px 60px rgba(20,60,100,.22) !important;
+
+    }
+
+    html[data-tema="claro"] .modal h3{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .modal > p{ color:#46627f !important; }
+
+    html[data-tema="claro"] .modal-icone{
+
+        background:color-mix(in srgb, var(--c,#1b5fd9) 14%, #ffffff) !important;
+
+        border-color:color-mix(in srgb, var(--c,#1b5fd9) 46%, #ffffff) !important;
+
+        color:color-mix(in srgb, var(--c,#1b5fd9) 64%, #0b2036) !important;
+
+    }
+
+    html[data-tema="claro"] .modal-valores{
+
+        border-color:rgba(20,60,100,.14) !important;
+
+        background:rgba(20,60,100,.14) !important;
+
+    }
+
+    html[data-tema="claro"] .modal-valores div{ background:#f4f8fd !important; }
+
+    html[data-tema="claro"] .modal-valores span{ color:#6d89a6 !important; }
+
+    html[data-tema="claro"] .modal-valores strong{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .modal-valores .verde{ color:#0a7a4c !important; }
+
+    html[data-tema="claro"] .modal-campo span{ color:#6d89a6 !important; }
+
+    html[data-tema="claro"] .modal-campo input,
+    html[data-tema="claro"] .modal-campo textarea{
+
+        border-color:rgba(20,60,100,.22) !important;
+
+        background:#ffffff !important;
+
+        color:#0b2036 !important;
+
+        color-scheme: light !important;
+
+    }
+
+    html[data-tema="claro"] .modal-campo input::placeholder,
+    html[data-tema="claro"] .modal-campo textarea::placeholder{
+
+        color:#8ba1b8 !important;
+
+    }
+
+    html[data-tema="claro"] .modal-campo input:focus,
+    html[data-tema="claro"] .modal-campo textarea:focus{
+
+        background:#ffffff !important;
+
+        border-color:#1b5fd9 !important;
+
+        box-shadow:inset 2px 0 0 #1b5fd9 !important;
+
+    }
+
+    html[data-tema="claro"] .metodo{
+
+        border-color:rgba(20,60,100,.22) !important;
+
+        background:#ffffff !important;
+
+        color:#46627f !important;
+
+    }
+
+    html[data-tema="claro"] .metodo:hover{
+
+        border-color:#1257c7 !important;
+
+        background:rgba(27,95,217,.08) !important;
+
+        color:#1b5fd9 !important;
+
+    }
+
+    html[data-tema="claro"] .metodo.escolhido{
+
+        border-color:#1b5fd9 !important;
+
+        background:rgba(27,95,217,.14) !important;
+
+        color:#164da8 !important;
+
+    }
+
+    /* o troco: verde quando sobra, vermelho quando falta */
+    html[data-tema="claro"] .troco{ color:#0a7a4c !important; }
+
+    html[data-tema="claro"] .troco.falta{ color:#a82222 !important; }
+
+    html[data-tema="claro"] .btn-nao{
+
+        border-color:rgba(20,60,100,.3) !important;
+
+        color:#46627f !important;
+
+    }
+
+    html[data-tema="claro"] .btn-nao:hover{
+
+        border-color:#1b5fd9 !important;
+
+        color:#1b5fd9 !important;
+
+    }
+
+    html[data-tema="claro"] .btn-sim{
+
+        border-color:color-mix(in srgb, var(--c,#1b5fd9) 68%, #0b2036) !important;
+
+        color:color-mix(in srgb, var(--c,#1b5fd9) 64%, #0b2036) !important;
+
+    }
+
+    html[data-tema="claro"] .btn-sim::before{
+
+        background:color-mix(in srgb, var(--c,#1b5fd9) 68%, #0b2036) !important;
+
+    }
+
+    html[data-tema="claro"] .btn-sim:hover{ color:#ffffff !important; }
+
+    html[data-tema="claro"] .btn-sim:disabled{
+
+        border-color:rgba(20,60,100,.14) !important;
+
+        color:#9bb0c4 !important;
+
+    }
+
+
+    /* ---------- avisos ---------- */
+
+    html[data-tema="claro"] .vc-aviso{
+
+        border-color:rgba(20,60,100,.14) !important;
+
+        border-left-color:color-mix(in srgb, var(--c,#1b5fd9) 66%, #0b2036) !important;
+
+        background:#ffffff !important;
+
+        box-shadow:0 14px 34px rgba(20,60,100,.18) !important;
+
+    }
+
+    html[data-tema="claro"] .vc-aviso b{
+
+        color:color-mix(in srgb, var(--c,#1b5fd9) 62%, #0b2036) !important;
+
+    }
+
+    html[data-tema="claro"] .vc-aviso span{ color:#46627f !important; }
+
+
+    /* ---------- celular ---------- */
+
+    @media (max-width:850px){
+
+        html[data-tema="claro"] .sidebar{ background:#ffffff !important; }
+
+        html[data-tema="claro"] .sidebar.open{
+
+            box-shadow:14px 0 40px rgba(20,60,100,.2) !important;
+
+        }
+
+    }
+
+
+    /* ---------- o botão do tema ----------
+       z-index abaixo da janela, que é 100.
+    */
+
+    .tema-botao{
+
+        position:fixed;
+
+        right:18px;
+
+        bottom:18px;
+
+        z-index:90;
+
+        width:44px;
+
+        height:44px;
+
+        display:grid;
+
+        place-items:center;
+
+        border:1px solid rgba(120,170,220,.34);
+
+        border-radius:4px;
+
+        background:#0a1d33;
+
+        color:#8cc2ff;
+
+        cursor:pointer;
+
+        box-shadow:0 10px 26px rgba(0,0,0,.4);
+
+        transition:border-color .18s, background .18s, color .18s, transform .18s;
+
+    }
+
+    .tema-botao:hover{
+
+        border-color:#2f7dff;
+
+        background:#2f7dff;
+
+        color:#ffffff;
+
+        transform:translateY(-2px);
+
+    }
+
+    .tema-botao svg{ width:19px; height:19px; stroke-width:1.8; }
+
+    html[data-tema="claro"] .tema-botao{
+
+        border-color:rgba(20,60,100,.22);
+
+        background:#ffffff;
+
+        color:#1b5fd9;
+
+        box-shadow:0 10px 26px rgba(20,60,100,.16);
+
+    }
+
+    html[data-tema="claro"] .tema-botao:hover{
+
+        border-color:#1b5fd9;
+
+        background:#1b5fd9;
+
+        color:#ffffff;
+
+    }
+
+    @media (max-width:520px){
+
+        .tema-botao{ right:14px; bottom:14px; width:40px; height:40px; }
+
+    }
+
+    `;
+
+
+    /* =================================================
+       INJETA O CSS
+    ================================================= */
+
+    const folha = document.createElement("style");
+
+    folha.id = "tema-claro-estilo";
+
+    folha.textContent = estilo;
+
+    document.head.appendChild(folha);
+
+
+    /* =================================================
+       APLICA O QUE ESTAVA SALVO
+    ================================================= */
+
+    if(localStorage.getItem(CHAVE) === "claro"){
+
+        document.documentElement.setAttribute("data-tema", "claro");
+
+    }
+
+
+    /* =================================================
+       DESENHOS DO BOTÃO
+    ================================================= */
+
+    const sol = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.2"/>
+            <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6
+                     M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+        </svg>`;
+
+
+    const lua = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>
+        </svg>`;
+
+
+    /* =================================================
+       BOTÃO
+    ================================================= */
+
+    function criarBotao(){
+
+        if(document.querySelector(".tema-botao")) return;
+
+
+        const botao = document.createElement("button");
+
+        botao.className = "tema-botao";
+
+        botao.type = "button";
+
+        document.body.appendChild(botao);
+
+
+        function pintar(){
+
+            const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+            botao.innerHTML = claro ? lua : sol;
+
+            botao.title = claro ? "Mudar para o modo escuro" : "Mudar para o modo claro";
+
+            botao.setAttribute("aria-label", botao.title);
+
+            botao.setAttribute("aria-pressed", claro ? "true" : "false");
+
+        }
+
+
+        botao.addEventListener("click", () => {
+
+            const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+
+            if(claro){
+
+                document.documentElement.removeAttribute("data-tema");
+
+                localStorage.setItem(CHAVE, "escuro");
+
+            } else {
+
+                document.documentElement.setAttribute("data-tema", "claro");
+
+                localStorage.setItem(CHAVE, "claro");
+
+            }
+
+
+            pintar();
+
+        });
+
+
+        pintar();
+
+    }
+
+
+    if(document.readyState === "loading"){
+
+        document.addEventListener("DOMContentLoaded", criarBotao);
+
+    } else {
+
+        criarBotao();
+
+    }
+
+
+    /* =================================================
+       ATALHO DE TECLADO: Shift + T
+       Não dispara enquanto você digita nos campos.
+    ================================================= */
+
+    document.addEventListener("keydown", (evento) => {
+
+        if(evento.shiftKey && (evento.key === "T" || evento.key === "t")){
+
+            const alvo = evento.target;
+
+            if(alvo && ["INPUT", "TEXTAREA", "SELECT"].includes(alvo.tagName)) return;
+
+            const botao = document.querySelector(".tema-botao");
+
+            if(botao) botao.click();
+
+        }
+
+    });
+
+})();
 </script>
 
 

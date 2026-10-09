@@ -115,14 +115,23 @@
             <form id="parkingForm">
               <div class="form-grid">
                 <label class="field field-wide">Nome<input name="name" placeholder="Ex.: CenterPark" required></label>
-                <label class="field">Cidade<input name="city" placeholder="Ex.: São Paulo" required></label>
-                <label class="field">Estado<select name="state" required><option value="">Selecione</option><option>SP</option><option>RJ</option><option>MG</option><option>PR</option></select></label>
-                <label class="field field-wide">Rua<input name="street" placeholder="Ex.: Rua das Flores" required></label>
-                <label class="field">Número<input name="number" placeholder="Ex.: 123" required></label>
-                <label class="field field-wide">Bairro<input name="district" placeholder="Ex.: Jardim das Acácias" required></label>
                 <label class="field">CEP<input name="zip" placeholder="00000-000" maxlength="9" required></label>
+                <label class="field">Número<input name="number" placeholder="Ex.: 123" required></label>
+                <label class="field field-wide">Rua<input name="street" placeholder="Ex.: Rua das Flores" required></label>
+                <label class="field field-wide">Bairro<input name="district" placeholder="Ex.: Jardim das Acácias" required></label>
+                <label class="field">Cidade<input name="city" placeholder="Ex.: São Paulo" required></label>
+                <label class="field">Estado<select name="state" required>
+                  <option value="">Selecione</option>
+                  <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+                  <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+                  <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+                  <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+                  <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+                  <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+                  <option>SP</option><option>SE</option><option>TO</option>
+                </select></label>
                 <label class="field">Quantidade de vagas<input name="spaces" type="number" min="1" placeholder="Ex.: 80" required></label>
-                <label class="field">Preço por vaga (R$)<input name="price" type="number" min="0" step="0.01" placeholder="Ex.: 25,00" required></label>
+                <label class="field">Preço por hora (R$)<input name="price" type="number" min="0" step="0.01" placeholder="Ex.: 15,00" required></label>
                 <label class="field">Status<select name="status"><option>Ativo</option><option>Inativo</option></select></label>
               </div>
               <div class="form-actions">
@@ -143,6 +152,7 @@
 
 
       <script src="../../Base/JS/sessao.js"></script>
+      <script src="../../Base/JS/cep.js"></script>
       <script>
 
 
@@ -282,6 +292,14 @@ save:
       const botaoCancelar = document.querySelector("#cancelButton");
       const botaoSalvar = formulario.querySelector("button[type='submit']");
 
+      Cep.ligar(formulario.zip, {
+        rua:    formulario.street,
+        bairro: formulario.district,
+        cidade: formulario.city,
+        estado: formulario.state,
+        numero: formulario.number
+      });
+
       const params = new URLSearchParams(window.location.search);
       const idEdicao = params.get("id");
 
@@ -311,18 +329,18 @@ save:
           formulario.street.value = estacionamento.endereco.rua;
           formulario.number.value = estacionamento.endereco.numero;
           formulario.district.value = estacionamento.endereco.bairro;
-          formulario.zip.value = estacionamento.endereco.cep;
+          formulario.zip.value = Cep.formatar(estacionamento.endereco.cep);
           formulario.status.value = estacionamento.status;
 
           // Na edição as vagas e os preços são gerenciados na tela de Vagas
           formulario.spaces.value = estacionamento.vagas.length;
-          formulario.spaces.readOnly = true;
+          
 
           formulario.price.value = estacionamento.vagas.length
             ? estacionamento.vagas[0].preco
             : 0;
 
-          formulario.price.readOnly = true;
+          
 
           document.querySelector("h1").textContent = "Editar Estacionamento";
         } catch (error) {
@@ -477,6 +495,633 @@ save:
       });
 
       preencherFormularioParaEditar();
+    })();
+
+        /* =====================================================
+       VagaConnect · modo claro · Cadastrar Estacionamento
+
+       Injeta o CSS claro na página e cria o botão de
+       sol/lua no canto. O escuro continua sendo o padrão,
+       e a escolha vale para as outras telas também.
+    ===================================================== */
+
+    (function(){
+
+        "use strict";
+
+
+        console.log("[tema] cadastro de estacionamento carregado");
+
+
+        const CHAVE = "vagaconnect-tema";
+
+
+        /* =================================================
+           O CSS DO MODO CLARO
+           Entra como <style> no fim do <head>, depois do
+           CadasEsta.css, então vence por ordem.
+        ================================================= */
+
+        const estilo = `
+
+        html[data-tema="claro"]{
+
+            --tinta:#eef3f9;      --superficie:#ffffff;  --elevado:#f4f8fd;
+            --fundo:#eef3f9;      --painel:#ffffff;      --cartao:#f4f8fd;
+            --campo:#ffffff;      --bg:#eef3f9;          --card:#ffffff;
+
+            --risco:rgba(20,60,100,.14);       --risco-forte:rgba(20,60,100,.3);
+            --linha:rgba(20,60,100,.14);       --linha-forte:rgba(20,60,100,.3);
+            --border:rgba(20,60,100,.14);      --line:rgba(20,60,100,.14);
+
+            --texto:#0b2036;   --apagado:#46627f;  --fraco:#6d89a6;
+            --text:#0b2036;    --muted:#46627f;    --ink:#0b2036;
+
+            --azul:#1b5fd9;    --azul-claro:#1257c7;   --blue:#1b5fd9;
+            --verde:#0a7a4c;   --ambar:#8a5605;        --vermelho:#a82222;
+
+            color-scheme: light;
+
+        }
+
+
+        /* ---------- fundo ---------- */
+
+        html[data-tema="claro"] body{
+
+            color:#0b2036 !important;
+
+            background:
+                repeating-linear-gradient(0deg,  rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+                repeating-linear-gradient(90deg, rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+                linear-gradient(180deg, #f7fafd 0%, #eef3f9 60%) !important;
+
+            background-attachment:fixed !important;
+
+        }
+
+        html[data-tema="claro"] .app-shell{ background:transparent !important; }
+
+        html[data-tema="claro"] ::selection{ background:rgba(27,95,217,.2); }
+
+
+        /* ---------- sidebar ---------- */
+
+        html[data-tema="claro"] .sidebar{
+
+            background:#ffffff !important;
+
+            border-right-color:rgba(20,60,100,.14) !important;
+
+            box-shadow:0 10px 30px rgba(20,60,100,.07);
+
+        }
+
+        html[data-tema="claro"] .logo{
+
+            color:#0b2036 !important;
+
+            border-bottom-color:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] .logo i,
+        html[data-tema="claro"] .logo span,
+        html[data-tema="claro"] .logo svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a{ color:#46627f !important; }
+
+        html[data-tema="claro"] .sidebar nav a svg,
+        html[data-tema="claro"] .sidebar svg{ color:#64809c !important; }
+
+        html[data-tema="claro"] .sidebar nav a:hover{
+
+            background:rgba(27,95,217,.09) !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav a:hover svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav .active,
+        html[data-tema="claro"] .sidebar nav a.active{
+
+            background:rgba(27,95,217,.13) !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav .active svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a::before{ background:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a#btnSair:hover{
+
+            background:rgba(198,47,47,.09) !important;
+
+            color:#a82222 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav a#btnSair:hover svg{ color:#c62f2f !important; }
+
+
+        /* ---------- perfil ---------- */
+
+        html[data-tema="claro"] .profile{
+
+            background:#f4f8fd !important;
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            border-top-color:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] .profile strong{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .profile small,
+        html[data-tema="claro"] .profile > svg{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .avatar{
+
+            background:linear-gradient(135deg,#2a72ea,#1b5fd9) !important;
+
+            border-color:transparent !important;
+
+            color:#ffffff !important;
+
+            box-shadow:0 6px 16px rgba(27,95,217,.24);
+
+        }
+
+
+        /* ---------- topo ---------- */
+
+        html[data-tema="claro"] .topbar{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            border-bottom-color:rgba(20,60,100,.14) !important;
+
+            box-shadow:0 6px 20px rgba(20,60,100,.06);
+
+        }
+
+        html[data-tema="claro"] .topbar h1{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .topbar p{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .menu-button{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.3) !important;
+
+            color:#46627f !important;
+
+        }
+
+        html[data-tema="claro"] .menu-button:hover{
+
+            background:rgba(27,95,217,.1) !important;
+
+            border-color:#1b5fd9 !important;
+
+            color:#1b5fd9 !important;
+
+        }
+
+
+        /* ---------- painel do formulário ---------- */
+
+        html[data-tema="claro"] .form-panel{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            box-shadow:0 10px 28px rgba(20,60,100,.07);
+
+        }
+
+        html[data-tema="claro"] .form-heading{
+
+            border-bottom-color:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] .form-heading h2{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .form-heading p{ color:#6d89a6 !important; }
+
+        /* o quadradinho do ícone ao lado do título */
+        html[data-tema="claro"] .heading-icon{
+
+            background:rgba(27,95,217,.1) !important;
+
+            border-color:rgba(27,95,217,.28) !important;
+
+            color:#1b5fd9 !important;
+
+        }
+
+        html[data-tema="claro"] .heading-icon svg{ color:#1b5fd9 !important; }
+
+
+        /* ---------- campos ---------- */
+
+        html[data-tema="claro"] .field,
+        html[data-tema="claro"] form label{ color:#46627f !important; }
+
+        html[data-tema="claro"] input,
+        html[data-tema="claro"] select,
+        html[data-tema="claro"] textarea{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.22) !important;
+
+            color:#0b2036 !important;
+
+            color-scheme: light !important;
+
+        }
+
+        html[data-tema="claro"] input::placeholder,
+        html[data-tema="claro"] textarea::placeholder{ color:#8ba1b8 !important; }
+
+        /* a lista aberta do select de estado */
+        html[data-tema="claro"] select option{
+
+            background:#ffffff !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] input:hover,
+        html[data-tema="claro"] select:hover,
+        html[data-tema="claro"] textarea:hover{ border-color:#1257c7 !important; }
+
+        html[data-tema="claro"] input:focus,
+        html[data-tema="claro"] select:focus,
+        html[data-tema="claro"] textarea:focus{
+
+            background:#ffffff !important;
+
+            border-color:#1b5fd9 !important;
+
+            box-shadow:0 0 0 3px rgba(27,95,217,.14) !important;
+
+            outline:none !important;
+
+        }
+
+        html[data-tema="claro"] input:disabled,
+        html[data-tema="claro"] select:disabled{
+
+            background:#f1f5fa !important;
+
+            color:#7b95ae !important;
+
+        }
+
+        /* as setinhas do campo de número, no Chrome */
+        html[data-tema="claro"] input[type="number"]{
+
+            color-scheme: light !important;
+
+        }
+
+        /* campo que o CEP preencheu e o navegador marca */
+        html[data-tema="claro"] input:-webkit-autofill{
+
+            -webkit-text-fill-color:#0b2036 !important;
+
+            -webkit-box-shadow:0 0 0 60px #ffffff inset !important;
+
+        }
+
+        /* aviso de campo inválido, se o seu CSS usa isto */
+        html[data-tema="claro"] input:invalid:not(:placeholder-shown),
+        html[data-tema="claro"] select:invalid{
+
+            border-color:rgba(198,47,47,.5) !important;
+
+        }
+
+
+        /* ---------- botões ---------- */
+
+        html[data-tema="claro"] .form-actions{
+
+            border-top-color:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] button.secondary{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.24) !important;
+
+            color:#46627f !important;
+
+        }
+
+        html[data-tema="claro"] button.secondary:hover{
+
+            background:rgba(27,95,217,.08) !important;
+
+            border-color:#1b5fd9 !important;
+
+            color:#1b5fd9 !important;
+
+        }
+
+        html[data-tema="claro"] button.primary{
+
+            background:linear-gradient(180deg,#2a72ea,#1b5fd9) !important;
+
+            border-color:transparent !important;
+
+            color:#ffffff !important;
+
+            box-shadow:0 8px 20px rgba(27,95,217,.26);
+
+        }
+
+        html[data-tema="claro"] button.primary:hover{
+
+            background:linear-gradient(180deg,#3d82f5,#1958c9) !important;
+
+            color:#ffffff !important;
+
+        }
+
+        html[data-tema="claro"] button.primary svg{ color:#ffffff !important; }
+
+        html[data-tema="claro"] button.primary:disabled{
+
+            background:#e4ebf3 !important;
+
+            color:#9bb0c4 !important;
+
+            box-shadow:none !important;
+
+            cursor:not-allowed;
+
+        }
+
+        html[data-tema="claro"] button:focus-visible{
+
+            outline:2px solid #1b5fd9 !important;
+
+            outline-offset:2px;
+
+        }
+
+
+        /* ---------- celular ---------- */
+
+        @media (max-width:850px){
+
+            html[data-tema="claro"] .sidebar{ background:#ffffff !important; }
+
+            html[data-tema="claro"] .sidebar.open{
+
+                box-shadow:14px 0 40px rgba(20,60,100,.2) !important;
+
+            }
+
+        }
+
+
+        /* ---------- o botão do tema ---------- */
+
+        .tema-botao{
+
+            position:fixed;
+
+            right:18px;
+
+            bottom:18px;
+
+            z-index:90;
+
+            width:44px;
+
+            height:44px;
+
+            display:grid;
+
+            place-items:center;
+
+            border:1px solid rgba(120,170,220,.34);
+
+            border-radius:4px;
+
+            background:#0a1d33;
+
+            color:#8cc2ff;
+
+            cursor:pointer;
+
+            box-shadow:0 10px 26px rgba(0,0,0,.4);
+
+            transition:border-color .18s, background .18s, color .18s, transform .18s;
+
+        }
+
+        .tema-botao:hover{
+
+            border-color:#2f7dff;
+
+            background:#2f7dff;
+
+            color:#ffffff;
+
+            transform:translateY(-2px);
+
+        }
+
+        .tema-botao svg{ width:19px; height:19px; stroke-width:1.8; }
+
+        html[data-tema="claro"] .tema-botao{
+
+            border-color:rgba(20,60,100,.22);
+
+            background:#ffffff;
+
+            color:#1b5fd9;
+
+            box-shadow:0 10px 26px rgba(20,60,100,.16);
+
+        }
+
+        html[data-tema="claro"] .tema-botao:hover{
+
+            border-color:#1b5fd9;
+
+            background:#1b5fd9;
+
+            color:#ffffff;
+
+        }
+
+        @media (max-width:520px){
+
+            .tema-botao{ right:14px; bottom:14px; width:40px; height:40px; }
+
+        }
+
+        `;
+
+
+        /* =================================================
+           INJETA O CSS
+        ================================================= */
+
+        const folha = document.createElement("style");
+
+        folha.id = "tema-claro-estilo";
+
+        folha.textContent = estilo;
+
+        document.head.appendChild(folha);
+
+
+        /* =================================================
+           APLICA O QUE ESTAVA SALVO
+        ================================================= */
+
+        if(localStorage.getItem(CHAVE) === "claro"){
+
+            document.documentElement.setAttribute("data-tema", "claro");
+
+        }
+
+
+        /* =================================================
+           DESENHOS DO BOTÃO
+        ================================================= */
+
+        const sol = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.2"/>
+                <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6
+                         M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+            </svg>`;
+
+
+        const lua = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>
+            </svg>`;
+
+
+        /* =================================================
+           BOTÃO
+        ================================================= */
+
+        function criarBotao(){
+
+            if(document.querySelector(".tema-botao")) return;
+
+
+            const botao = document.createElement("button");
+
+            botao.className = "tema-botao";
+
+            botao.type = "button";
+
+            document.body.appendChild(botao);
+
+
+            function pintar(){
+
+                const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+                botao.innerHTML = claro ? lua : sol;
+
+                botao.title = claro ? "Mudar para o modo escuro" : "Mudar para o modo claro";
+
+                botao.setAttribute("aria-label", botao.title);
+
+                botao.setAttribute("aria-pressed", claro ? "true" : "false");
+
+            }
+
+
+            botao.addEventListener("click", () => {
+
+                const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+
+                if(claro){
+
+                    document.documentElement.removeAttribute("data-tema");
+
+                    localStorage.setItem(CHAVE, "escuro");
+
+                } else {
+
+                    document.documentElement.setAttribute("data-tema", "claro");
+
+                    localStorage.setItem(CHAVE, "claro");
+
+                }
+
+
+                pintar();
+
+            });
+
+
+            pintar();
+
+        }
+
+
+        if(document.readyState === "loading"){
+
+            document.addEventListener("DOMContentLoaded", criarBotao);
+
+        } else {
+
+            criarBotao();
+
+        }
+
+
+        /* =================================================
+           ATALHO DE TECLADO: Shift + T
+           Não dispara enquanto você digita nos campos.
+        ================================================= */
+
+        document.addEventListener("keydown", (evento) => {
+
+            if(evento.shiftKey && (evento.key === "T" || evento.key === "t")){
+
+                const alvo = evento.target;
+
+                if(alvo && ["INPUT", "TEXTAREA", "SELECT"].includes(alvo.tagName)) return;
+
+                const botao = document.querySelector(".tema-botao");
+
+                if(botao) botao.click();
+
+            }
+
+        });
+
     })();
     </script>
     </body>

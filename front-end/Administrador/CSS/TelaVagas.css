@@ -1290,3 +1290,798 @@ tbody tr:last-child td{
     }
 
 }
+
+/* =====================================================
+   MODO CLARO · Gerenciar Vagas
+   Cole no FIM do TelaVagas.css.
+
+   O escuro continua padrão. Este bloco só age quando a
+   página está marcada com data-tema="claro" no <html>,
+   o que o tema.js faz ao clicar no botão.
+
+   NO HTML, antes de fechar o <body>:
+     <script src="../../Base/JS/tema.js"></script>
+===================================================== */
+
+
+/* =====================================================
+   TOKENS
+   Repetidos em vários nomes porque cada tela do projeto
+   batizou as variáveis de um jeito. Assim o bloco serve
+   sem precisar conferir o arquivo original.
+===================================================== */
+
+html[data-tema="claro"]{
+
+    --fundo:        #eef3f9;
+    --painel:       #ffffff;
+    --cartao:       #f4f8fd;
+    --campo:        #ffffff;
+    --elevado:      #f4f8fd;
+    --superficie:   #ffffff;
+    --tinta:        #eef3f9;
+
+    --linha:        rgba(20, 60, 100, .14);
+    --linha-forte:  rgba(20, 60, 100, .3);
+    --risco:        rgba(20, 60, 100, .14);
+    --risco-forte:  rgba(20, 60, 100, .3);
+    --borda:        rgba(20, 60, 100, .14);
+
+    --texto:        #0b2036;
+    --apagado:      #46627f;
+    --fraco:        #64809c;
+
+    --azul:         #1b5fd9;
+    --azul-claro:   #1257c7;
+    --roxo:         #5b3fd0;
+    --violeta:      #6d4bd8;
+    --indigo:       #3f4bc9;
+
+    --verde:        #0f9d63;
+    --ambar:        #a86a06;
+    --amarelo:      #96700a;
+    --vermelho:     #c62f2f;
+
+    /* apelidos em inglês usados em algumas telas */
+    --bg:           #eef3f9;
+    --card:         #ffffff;
+    --panel:        #ffffff;
+    --border:       rgba(20, 60, 100, .14);
+    --line:         rgba(20, 60, 100, .14);
+    --muted:        #46627f;
+    --text:         #0b2036;
+    --ink:          #0b2036;
+    --blue:         #1b5fd9;
+    --purple:       #5b3fd0;
+    --green:        #0f9d63;
+    --amber:        #a86a06;
+    --red:          #c62f2f;
+
+    color-scheme: light;
+
+}
+
+
+
+/* =====================================================
+   FUNDO DA PÁGINA
+===================================================== */
+
+html[data-tema="claro"] body{
+
+    color:#0b2036;
+
+    background:
+        radial-gradient(820px 460px at 14% -12%, rgba(91, 63, 208, .10), transparent 62%),
+        radial-gradient(680px 380px at 100% 0%,  rgba(27, 95, 217, .07), transparent 58%),
+        #eef3f9;
+
+}
+
+
+html[data-tema="claro"] .app-shell{
+
+    background:transparent;
+
+}
+
+
+
+/* =====================================================
+   SIDEBAR
+   Igual à do Dashboard, para as telas combinarem.
+===================================================== */
+
+html[data-tema="claro"] .sidebar{
+
+    background:#ffffff;
+
+    border-right:1px solid rgba(20, 60, 100, .12);
+
+    box-shadow:0 10px 30px rgba(20, 60, 100, .07);
+
+}
+
+
+html[data-tema="claro"] .sidebar .logo{
+
+    color:#0b2036;
+
+    border-bottom-color:rgba(20, 60, 100, .12);
+
+}
+
+
+html[data-tema="claro"] .sidebar .logo span{
+
+    color:#1b5fd9;
+
+}
+
+
+html[data-tema="claro"] .sidebar .logo i,
+html[data-tema="claro"] .sidebar .logo svg{
+
+    color:#1b5fd9;
+
+}
+
+
+
+/* ---------- itens do menu ---------- */
+
+html[data-tema="claro"] .sidebar nav a{
+
+    color:#46627f;
+
+    background:transparent;
+
+}
+
+
+html[data-tema="claro"] .sidebar nav a svg{
+
+    color:#64809c;
+
+}
+
+
+html[data-tema="claro"] .sidebar nav a:hover{
+
+    background:rgba(27, 95, 217, .08);
+
+    color:#0b2036;
+
+}
+
+
+html[data-tema="claro"] .sidebar nav a:hover svg{
+
+    color:#1b5fd9;
+
+}
+
+
+html[data-tema="claro"] .sidebar nav a.active{
+
+    background:rgba(27, 95, 217, .12);
+
+    color:#0b2036;
+
+    border-color:rgba(27, 95, 217, .26);
+
+}
+
+
+html[data-tema="claro"] .sidebar nav a.active svg{
+
+    color:#1b5fd9;
+
+}
+
+
+/* o "Sair" fica avermelhado só no hover, para não poluir */
+html[data-tema="claro"] .sidebar nav a#btnSair:hover{
+
+    background:rgba(198, 47, 47, .09);
+
+    color:#a82222;
+
+}
+
+
+html[data-tema="claro"] .sidebar nav a#btnSair:hover svg{
+
+    color:#c62f2f;
+
+}
+
+
+
+/* ---------- perfil no pé da sidebar ---------- */
+
+html[data-tema="claro"] .profile{
+
+    background:#f4f8fd;
+
+    border-color:rgba(20, 60, 100, .14);
+
+    color:#0b2036;
+
+}
+
+
+html[data-tema="claro"] .profile strong{
+
+    color:#0b2036;
+
+}
+
+
+html[data-tema="claro"] .profile small{
+
+    color:#64809c;
+
+}
+
+
+html[data-tema="claro"] .profile svg{
+
+    color:#7b95ae;
+
+}
+
+
+html[data-tema="claro"] .profile .avatar{
+
+    background:linear-gradient(180deg, #5b3fd0, #3f2cb0);
+
+    color:#ffffff;
+
+    border-color:transparent;
+
+    box-shadow:0 6px 16px rgba(91, 63, 208, .26);
+
+}
+
+
+
+/* =====================================================
+   TOPO DO CONTEÚDO
+===================================================== */
+
+html[data-tema="claro"] .topbar{
+
+    background:#ffffff;
+
+    border-color:rgba(20, 60, 100, .12);
+
+    box-shadow:0 6px 20px rgba(20, 60, 100, .06);
+
+}
+
+
+html[data-tema="claro"] .topbar h1{
+
+    color:#0b2036;
+
+}
+
+
+html[data-tema="claro"] .topbar p{
+
+    color:#46627f;
+
+}
+
+
+html[data-tema="claro"] .menu-button{
+
+    background:#ffffff;
+
+    border-color:rgba(20, 60, 100, .18);
+
+    color:#46627f;
+
+}
+
+
+html[data-tema="claro"] .menu-button:hover{
+
+    background:rgba(27, 95, 217, .1);
+
+    border-color:#1b5fd9;
+
+    color:#1b5fd9;
+
+}
+
+
+
+/* ---------- botão de adicionar vaga ---------- */
+
+html[data-tema="claro"] .primary-button{
+
+    background:linear-gradient(180deg, #2a72ea, #1b5fd9);
+
+    border-color:transparent;
+
+    color:#ffffff;
+
+    box-shadow:0 8px 20px rgba(27, 95, 217, .26);
+
+}
+
+
+html[data-tema="claro"] .primary-button:hover{
+
+    background:linear-gradient(180deg, #3d82f5, #1958c9);
+
+    color:#ffffff;
+
+}
+
+
+html[data-tema="claro"] .primary-button svg{
+
+    color:#ffffff;
+
+}
+
+
+
+/* =====================================================
+   PAINEL DA TABELA
+===================================================== */
+
+html[data-tema="claro"] .panel{
+
+    background:#ffffff;
+
+    border-color:rgba(20, 60, 100, .12);
+
+    box-shadow:0 10px 28px rgba(20, 60, 100, .07);
+
+}
+
+
+html[data-tema="claro"] .toolbar{
+
+    border-bottom-color:rgba(20, 60, 100, .12);
+
+}
+
+
+/* o rótulo acima de cada filtro */
+html[data-tema="claro"] .toolbar label{
+
+    color:#46627f;
+
+}
+
+
+
+/* ---------- filtros de estacionamento e status ---------- */
+
+html[data-tema="claro"] .toolbar select,
+html[data-tema="claro"] #parkingFilter,
+html[data-tema="claro"] #statusFilter{
+
+    background:#ffffff;
+
+    border-color:rgba(20, 60, 100, .22);
+
+    color:#0b2036;
+
+    color-scheme: light;
+
+}
+
+
+html[data-tema="claro"] .toolbar select:hover{
+
+    border-color:#1257c7;
+
+}
+
+
+html[data-tema="claro"] .toolbar select:focus{
+
+    border-color:#1b5fd9;
+
+    box-shadow:0 0 0 3px rgba(27, 95, 217, .14);
+
+    outline:none;
+
+}
+
+
+/* a lista aberta do select, no Windows e no Linux */
+html[data-tema="claro"] .toolbar select option{
+
+    background:#ffffff;
+
+    color:#0b2036;
+
+}
+
+
+
+/* ---------- campo de busca ---------- */
+
+html[data-tema="claro"] .search-box{
+
+    background:#ffffff;
+
+    border-color:rgba(20, 60, 100, .22);
+
+}
+
+
+html[data-tema="claro"] .search-box svg{
+
+    color:#7b95ae;
+
+}
+
+
+html[data-tema="claro"] .search-box:focus-within{
+
+    border-color:#1b5fd9;
+
+    box-shadow:0 0 0 3px rgba(27, 95, 217, .14);
+
+}
+
+
+html[data-tema="claro"] .search-box:focus-within svg{
+
+    color:#1b5fd9;
+
+}
+
+
+html[data-tema="claro"] .search-box input,
+html[data-tema="claro"] #searchInput{
+
+    background:transparent;
+
+    color:#0b2036;
+
+    color-scheme: light;
+
+}
+
+
+html[data-tema="claro"] .search-box input::placeholder,
+html[data-tema="claro"] #searchInput::placeholder{
+
+    color:#8ba1b8;
+
+}
+
+
+html[data-tema="claro"] input[type="search"]::-webkit-search-cancel-button{
+
+    filter:none;
+
+}
+
+
+
+/* =====================================================
+   TABELA
+===================================================== */
+
+html[data-tema="claro"] .table-wrap{
+
+    border-color:rgba(20, 60, 100, .12);
+
+}
+
+
+html[data-tema="claro"] table{
+
+    color:#0b2036;
+
+}
+
+
+html[data-tema="claro"] thead th{
+
+    background:#f1f6fc;
+
+    border-bottom-color:rgba(20, 60, 100, .16);
+
+    color:#46627f;
+
+}
+
+
+html[data-tema="claro"] tbody td{
+
+    border-bottom-color:rgba(20, 60, 100, .1);
+
+    color:#0b2036;
+
+}
+
+
+html[data-tema="claro"] tbody tr:hover td{
+
+    background:rgba(27, 95, 217, .05);
+
+}
+
+
+html[data-tema="claro"] tbody td[colspan]{
+
+    color:#64809c;
+
+}
+
+
+html[data-tema="claro"] .table-count{
+
+    color:#64809c;
+
+}
+
+
+
+/* =====================================================
+   ETIQUETAS DE STATUS
+   Os nomes vêm de spot.status.toLowerCase(), por isso
+   estão em minúsculo: livre, ocupada, reservada.
+===================================================== */
+
+html[data-tema="claro"] .status{
+
+    background:rgba(20, 60, 100, .07);
+
+    border-color:rgba(20, 60, 100, .2);
+
+    color:#46627f;
+
+}
+
+
+html[data-tema="claro"] .status.livre{
+
+    background:rgba(15, 157, 99, .1);
+
+    border-color:rgba(15, 157, 99, .3);
+
+    color:#0a7a4c;
+
+}
+
+
+html[data-tema="claro"] .status.ocupada{
+
+    background:rgba(198, 47, 47, .1);
+
+    border-color:rgba(198, 47, 47, .3);
+
+    color:#a82222;
+
+}
+
+
+html[data-tema="claro"] .status.reservada{
+
+    background:rgba(168, 106, 6, .1);
+
+    border-color:rgba(168, 106, 6, .3);
+
+    color:#8a5605;
+
+}
+
+
+/* caso você use esse status mais pra frente */
+html[data-tema="claro"] .status.manutenção,
+html[data-tema="claro"] .status.manutencao{
+
+    background:rgba(91, 63, 208, .1);
+
+    border-color:rgba(91, 63, 208, .3);
+
+    color:#4a2fb8;
+
+}
+
+
+
+/* =====================================================
+   BOTÕES DE AÇÃO DA LINHA
+   O de editar fica azul; o de excluir só fica vermelho
+   no hover, para não deixar a tabela agressiva.
+===================================================== */
+
+html[data-tema="claro"] .row-actions button{
+
+    background:#ffffff;
+
+    border-color:rgba(20, 60, 100, .2);
+
+    color:#46627f;
+
+}
+
+
+html[data-tema="claro"] .row-actions button svg{
+
+    color:currentColor;
+
+}
+
+
+html[data-tema="claro"] .row-actions button:hover{
+
+    background:rgba(27, 95, 217, .1);
+
+    border-color:#1b5fd9;
+
+    color:#1b5fd9;
+
+}
+
+
+html[data-tema="claro"] .row-actions button.delete{
+
+    color:#8a4040;
+
+}
+
+
+html[data-tema="claro"] .row-actions button.delete:hover{
+
+    background:rgba(198, 47, 47, .1);
+
+    border-color:#c62f2f;
+
+    color:#a82222;
+
+}
+
+
+html[data-tema="claro"] .row-actions button:focus-visible{
+
+    outline:2px solid #1b5fd9;
+
+    outline-offset:2px;
+
+}
+
+
+
+/* =====================================================
+   BOTÃO DE TROCA DE TEMA
+   Fica acima da sidebar aberta no celular.
+===================================================== */
+
+.tema-botao{
+
+    position:fixed;
+
+    right:18px;
+
+    bottom:18px;
+
+    z-index:400;
+
+    width:44px;
+
+    height:44px;
+
+    display:grid;
+
+    place-items:center;
+
+    border:1px solid rgba(255, 255, 255, .22);
+
+    border-radius:10px;
+
+    background:#141a2e;
+
+    color:#8cc2ff;
+
+    cursor:pointer;
+
+    box-shadow:0 10px 26px rgba(0, 0, 0, .34);
+
+    transition:border-color .18s, background .18s, color .18s, transform .18s;
+
+}
+
+
+.tema-botao:hover{
+
+    border-color:#1b5fd9;
+
+    background:#1b5fd9;
+
+    color:#ffffff;
+
+    transform:translateY(-2px);
+
+}
+
+
+.tema-botao:focus-visible{
+
+    outline:2px solid #8cc2ff;
+
+    outline-offset:3px;
+
+}
+
+
+.tema-botao svg{
+
+    width:19px;
+
+    height:19px;
+
+    stroke-width:1.8;
+
+}
+
+
+html[data-tema="claro"] .tema-botao{
+
+    background:#ffffff;
+
+    border-color:rgba(20, 60, 100, .22);
+
+    color:#1b5fd9;
+
+    box-shadow:0 10px 26px rgba(20, 60, 100, .16);
+
+}
+
+
+html[data-tema="claro"] .tema-botao:hover{
+
+    background:#1b5fd9;
+
+    border-color:#1b5fd9;
+
+    color:#ffffff;
+
+}
+
+
+@media (max-width:850px){
+
+    .tema-botao{
+
+        right:14px;
+
+        bottom:14px;
+
+        width:40px;
+
+        height:40px;
+
+    }
+
+}
+
+
+@media (prefers-reduced-motion:reduce){
+
+    .tema-botao{
+
+        transition:none;
+
+    }
+
+    .tema-botao:hover{
+
+        transform:none;
+
+    }
+
+}

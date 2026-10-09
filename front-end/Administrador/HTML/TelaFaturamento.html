@@ -162,42 +162,42 @@
 
                 <div class="card">
 
-                    <span>Faturamento do mês</span>
+                    <span>Receita do mês</span>
 
                     <h2 id="totalMes">
                         R$ 0,00
                     </h2>
 
                     <p>
-                        Receita total recebida
+                        Pagamentos recebidos
                     </p>
 
                 </div>
 
                 <div class="card">
 
-                    <span>Reservas realizadas</span>
+                    <span>Reembolsado</span>
 
-                    <h2 id="totalReservas">
-                        0
-                    </h2>
-
-                    <p>
-                        No período selecionado
-                    </p>
-
-                </div>
-
-                <div class="card">
-
-                    <span>Ticket médio</span>
-
-                    <h2 id="ticketMedio">
+                    <h2 id="totalReembolsado">
                         R$ 0,00
                     </h2>
 
                     <p>
-                        Valor médio por reserva
+                        Pedidos aprovados no período
+                    </p>
+
+                </div>
+
+                <div class="card">
+
+                    <span>Líquido</span>
+
+                    <h2 id="totalLiquido">
+                        R$ 0,00
+                    </h2>
+
+                    <p>
+                        Receita menos reembolsos
                     </p>
 
                 </div>
@@ -317,6 +317,7 @@
             const cardCrescimento = document.getElementById("crescimento");
 
             let pagamentos = [];
+            let reembolsos = [];
 
             meses.forEach((nome, indice) => {
                 const option = document.createElement("option");
@@ -362,8 +363,20 @@
                 return data.getMonth() + 1 === mes && data.getFullYear() === ano;
             }
 
-            function soma(lista) {
-                return lista.reduce((total, item) => total + Number(item.valor || 0), 0);
+            function dataDoReembolso(item) {
+                return item.respondido || item.criadoEm || null;
+            }
+
+            function noPeriodoReembolso(item, mes, ano) {
+                if (item.status !== "Aprovada") return false;
+                const texto = dataDoReembolso(item);
+                if (!texto) return false;
+                const data = new Date(texto);
+                return data.getMonth() + 1 === mes && data.getFullYear() === ano;
+            }
+
+            function somaReembolso(lista) {
+                return lista.reduce((total, item) => total + Number(item.valorDevolver || 0), 0);
             }
 
             function reservasUnicas(lista) {
@@ -420,14 +433,16 @@
                 const anoAnterior = mes === 1 ? ano - 1 : ano;
                 const doMesAnterior = pagamentos.filter((item) => noPeriodo(item, mesAnterior, anoAnterior));
 
-                const total = soma(doMes);
-                const qtdReservas = reservasUnicas(doMes);
-                const media = qtdReservas ? total / qtdReservas : 0;
+                const bruto = soma(doMes);
+                const devolvido = somaReembolso(reembolsos.filter((item) => noPeriodoReembolso(item, mes, ano)));
+                const devolvidoAnterior = somaReembolso(reembolsos.filter((item) => noPeriodoReembolso(item, mesAnterior, anoAnterior)));
+                const liquido = bruto - devolvido;
+                const liquidoAnterior = soma(doMesAnterior) - devolvidoAnterior;
 
-                document.getElementById("totalMes").textContent = mostrarPreco(total);
-                document.getElementById("totalReservas").textContent = qtdReservas;
-                document.getElementById("ticketMedio").textContent = mostrarPreco(media);
-                atualizarCrescimento(total, soma(doMesAnterior));
+                document.getElementById("totalMes").textContent = mostrarPreco(bruto);
+                document.getElementById("totalReembolsado").textContent = mostrarPreco(devolvido);
+                document.getElementById("totalLiquido").textContent = mostrarPreco(liquido);
+                atualizarCrescimento(liquido, liquidoAnterior);
 
                 if (lista.length === 0) {
                     tabela.innerHTML = `<tr><td colspan="6">Nenhum pagamento neste período.</td></tr>`;
@@ -476,7 +491,12 @@
                             `Data: ${dataCurta(dataDoPagamento(item))}\n\n`;
                     });
 
-                    relatorio += `Total: ${mostrarPreco(soma(lista))}\n`;
+                    relatorio += `Total recebido: ${mostrarPreco(soma(lista))}\n`;
+                    const devolvidoRelatorio = somaReembolso(
+                        reembolsos.filter((item) => noPeriodoReembolso(item, Number(selectMes.value), Number(selectAno.value)))
+                    );
+                    relatorio += `Reembolsado: ${mostrarPreco(devolvidoRelatorio)}\n`;
+                    relatorio += `Líquido: ${mostrarPreco(soma(lista) - devolvidoRelatorio)}\n`;
                 }
 
                 const arquivo = new Blob([relatorio], { type: "text/plain;charset=utf-8" });
@@ -496,6 +516,15 @@
                 const lista = await resposta.json();
                 if (!resposta.ok) throw new Error(lista.erro || "Erro ao carregar o faturamento");
                 pagamentos = lista;
+
+                try {
+                    const respostaReembolso = await fetch(API + "/reembolso");
+                    const listaReembolsos = await respostaReembolso.json();
+                    reembolsos = respostaReembolso.ok && Array.isArray(listaReembolsos) ? listaReembolsos : [];
+                } catch (error) {
+                    reembolsos = [];
+                }
+
                 render();
             }
 
@@ -504,6 +533,661 @@
             });
 
         }
+
+        /* =====================================================
+   VagaConnect · tema-claro-faturamento.js
+
+===================================================== */
+
+(function(){
+
+    "use strict";
+
+
+    console.log("[tema] faturamento carregado");
+
+
+    const CHAVE = "vagaconnect-tema";
+
+
+
+    /* =================================================
+       O CSS DO MODO CLARO
+
+       Injetado como <style> no fim do <head>, então entra
+       depois do TelaFaturamento.css e vence por ordem,
+       além do !important nos pontos onde o arquivo escuro
+       tem cor cravada na regra.
+    ================================================= */
+
+    const estilo = `
+
+    html[data-tema="claro"]{
+
+        --tinta:       #eef3f9;
+        --superficie:  #ffffff;
+        --elevado:     #f4f8fd;
+
+        --risco:       rgba(20, 60, 100, .14);
+        --risco-forte: rgba(20, 60, 100, .3);
+
+        --texto:       #0b2036;
+        --apagado:     #46627f;
+        --fraco:       #6d89a6;
+
+        --azul:        #1b5fd9;
+        --azul-claro:  #1257c7;
+
+        --verde:       #0a7a4c;
+        --ambar:       #8a5605;
+        --vermelho:    #a82222;
+
+        --bg:          #eef3f9;
+        --border:      rgba(20, 60, 100, .14);
+        --muted:       #46627f;
+        --text:        #0b2036;
+
+        color-scheme: light;
+
+    }
+
+
+    /* ---------- fundo ---------- */
+
+    html[data-tema="claro"] body{
+
+        color:#0b2036 !important;
+
+        background:
+            repeating-linear-gradient(0deg,  rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+            repeating-linear-gradient(90deg, rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+            linear-gradient(180deg, #f7fafd 0%, #eef3f9 60%) !important;
+
+        background-attachment:fixed !important;
+
+    }
+
+    html[data-tema="claro"] ::selection{ background:rgba(27,95,217,.2); }
+
+
+    /* ---------- sidebar ---------- */
+
+    html[data-tema="claro"] .sidebar{
+
+        background:#ffffff !important;
+
+        border-right-color:rgba(20,60,100,.14) !important;
+
+        box-shadow:0 10px 30px rgba(20,60,100,.07);
+
+    }
+
+    html[data-tema="claro"] .logo{
+
+        color:#0b2036 !important;
+
+        border-bottom-color:rgba(20,60,100,.14) !important;
+
+    }
+
+    html[data-tema="claro"] .logo i,
+    html[data-tema="claro"] .logo span{ color:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .sidebar nav a{ color:#46627f !important; }
+
+    html[data-tema="claro"] .sidebar svg{ color:#64809c !important; }
+
+    html[data-tema="claro"] .sidebar nav a:hover{
+
+        background:rgba(27,95,217,.09) !important;
+
+        color:#0b2036 !important;
+
+    }
+
+    html[data-tema="claro"] .sidebar nav a:hover svg{ color:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .sidebar nav .active{
+
+        background:rgba(27,95,217,.13) !important;
+
+        color:#0b2036 !important;
+
+    }
+
+    html[data-tema="claro"] .sidebar nav .active svg{ color:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .sidebar nav a::before{ background:#1b5fd9 !important; }
+
+
+    /* ---------- perfil ---------- */
+
+    html[data-tema="claro"] .profile{
+
+        border-top-color:rgba(20,60,100,.14) !important;
+
+    }
+
+    html[data-tema="claro"] .avatar{
+
+        background:linear-gradient(135deg,#2a72ea,#1b5fd9) !important;
+
+        border-color:transparent !important;
+
+        color:#ffffff !important;
+
+        box-shadow:0 6px 16px rgba(27,95,217,.24);
+
+    }
+
+    html[data-tema="claro"] .profile strong{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .profile small,
+    html[data-tema="claro"] .profile > svg{ color:#6d89a6 !important; }
+
+
+    /* ---------- topo ---------- */
+
+    html[data-tema="claro"] .topbar{
+
+        border-bottom-color:rgba(20,60,100,.14) !important;
+
+    }
+
+    html[data-tema="claro"] .topbar h1{ color:#0b2036 !important; }
+
+    html[data-tema="claro"] .topbar p{ color:#6d89a6 !important; }
+
+    html[data-tema="claro"] .primary-button{
+
+        border-color:#1b5fd9 !important;
+
+        color:#1b5fd9 !important;
+
+    }
+
+    html[data-tema="claro"] .primary-button::before{ background:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .primary-button:hover{ color:#ffffff !important; }
+
+    html[data-tema="claro"] .menu-button{
+
+        border-color:rgba(20,60,100,.3) !important;
+
+        color:#46627f !important;
+
+    }
+
+    html[data-tema="claro"] .menu-button:hover{
+
+        background:rgba(27,95,217,.1) !important;
+
+        border-color:#1b5fd9 !important;
+
+        color:#1b5fd9 !important;
+
+    }
+
+
+    /* ---------- cards ----------
+       A malha colada continua: o fundo da grade é a linha
+       clara e cada card é branco em cima dela.
+    */
+
+    html[data-tema="claro"] .cards{
+
+        border-color:rgba(20,60,100,.14) !important;
+
+        background:rgba(20,60,100,.14) !important;
+
+    }
+
+    html[data-tema="claro"] .card{ background:#ffffff !important; }
+
+    html[data-tema="claro"] .card:hover{ background:#f4f8fd !important; }
+
+    html[data-tema="claro"] .card span,
+    html[data-tema="claro"] .card p{ color:#6d89a6 !important; }
+
+    html[data-tema="claro"] .card h2{ color:#0b2036 !important; }
+
+    /* 1º Receita · 2º Reembolsado · 3º Líquido */
+    html[data-tema="claro"] .card:nth-child(1) h2{ color:#164da8 !important; }
+
+    html[data-tema="claro"] .card:nth-child(2) h2{ color:#a82222 !important; }
+
+    html[data-tema="claro"] .card:nth-child(3) h2{ color:#0a7a4c !important; }
+
+    /* o card de crescimento troca de classe pelo script:
+       green, yellow ou red. Estas três vencem as de cima
+       porque vêm depois. */
+    html[data-tema="claro"] .green{ color:#0a7a4c !important; }
+
+    html[data-tema="claro"] .yellow{ color:#8a5605 !important; }
+
+    html[data-tema="claro"] .red{ color:#a82222 !important; }
+
+
+    /* ---------- painel ---------- */
+
+    html[data-tema="claro"] .panel{
+
+        border-color:rgba(20,60,100,.14) !important;
+
+        background:#ffffff !important;
+
+        box-shadow:0 10px 28px rgba(20,60,100,.07);
+
+    }
+
+
+    /* ---------- filtros ----------
+       Aqui estão os campos com fundo escuro cravado.
+    */
+
+    html[data-tema="claro"] .filters{
+
+        border-bottom-color:rgba(20,60,100,.14) !important;
+
+    }
+
+    html[data-tema="claro"] .filters label{ color:#6d89a6 !important; }
+
+    html[data-tema="claro"] .filters label:focus-within{ color:#1b5fd9 !important; }
+
+    html[data-tema="claro"] .filters select,
+    html[data-tema="claro"] .filters input{
+
+        border-color:rgba(20,60,100,.22) !important;
+
+        background:#ffffff !important;
+
+        color:#0b2036 !important;
+
+        color-scheme: light !important;
+
+    }
+
+    html[data-tema="claro"] .filters select option{
+
+        background:#ffffff !important;
+
+        color:#0b2036 !important;
+
+    }
+
+    html[data-tema="claro"] .filters input::placeholder{ color:#8ba1b8 !important; }
+
+    html[data-tema="claro"] .filters select:hover,
+    html[data-tema="claro"] .filters input:hover{
+
+        border-color:#1257c7 !important;
+
+    }
+
+    html[data-tema="claro"] .filters select:focus,
+    html[data-tema="claro"] .filters input:focus{
+
+        background:#ffffff !important;
+
+        border-color:#1b5fd9 !important;
+
+        box-shadow:inset 2px 0 0 #1b5fd9 !important;
+
+    }
+
+
+    /* ---------- tabela ---------- */
+
+    html[data-tema="claro"] th{
+
+        border-bottom-color:rgba(20,60,100,.2) !important;
+
+        background:#f1f6fc !important;
+
+        color:#6d89a6 !important;
+
+    }
+
+    html[data-tema="claro"] td{
+
+        border-bottom-color:rgba(20,60,100,.1) !important;
+
+        color:#132c46 !important;
+
+    }
+
+    html[data-tema="claro"] tbody tr:hover{
+
+        background:rgba(27,95,217,.055) !important;
+
+    }
+
+    /* o valor de cada linha vem dentro de um <b> */
+    html[data-tema="claro"] td b{
+
+        color:#0b2036 !important;
+
+    }
+
+    html[data-tema="claro"] .total{ color:#0a7a4c !important; }
+
+    html[data-tema="claro"] .table-count{
+
+        border-top-color:rgba(20,60,100,.14) !important;
+
+        color:#6d89a6 !important;
+
+    }
+
+
+    /* ---------- etiquetas ---------- */
+
+    html[data-tema="claro"] .status{
+
+        border-color:rgba(20,60,100,.3) !important;
+
+        color:#46627f !important;
+
+    }
+
+    html[data-tema="claro"] .confirmado{
+
+        border-color:rgba(15,157,99,.32) !important;
+
+        background:rgba(15,157,99,.1) !important;
+
+        color:#0a7a4c !important;
+
+    }
+
+    html[data-tema="claro"] .pendente{
+
+        border-color:rgba(168,106,6,.3) !important;
+
+        background:rgba(168,106,6,.1) !important;
+
+        color:#8a5605 !important;
+
+    }
+
+    html[data-tema="claro"] .cancelado{
+
+        border-color:rgba(198,47,47,.3) !important;
+
+        background:rgba(198,47,47,.1) !important;
+
+        color:#a82222 !important;
+
+    }
+
+
+    /* ---------- ações da linha ---------- */
+
+    html[data-tema="claro"] .row-actions button{
+
+        border-color:rgba(20,60,100,.2) !important;
+
+        color:#46627f !important;
+
+    }
+
+    html[data-tema="claro"] .row-actions button:hover{
+
+        border-color:#1b5fd9 !important;
+
+        background:rgba(27,95,217,.1) !important;
+
+        color:#1b5fd9 !important;
+
+    }
+
+    html[data-tema="claro"] .row-actions .delete:hover{
+
+        border-color:#c62f2f !important;
+
+        background:rgba(198,47,47,.1) !important;
+
+        color:#a82222 !important;
+
+    }
+
+
+    /* ---------- celular ---------- */
+
+    @media (max-width:850px){
+
+        html[data-tema="claro"] .sidebar{ background:#ffffff !important; }
+
+        html[data-tema="claro"] .sidebar.open{
+
+            box-shadow:14px 0 40px rgba(20,60,100,.2) !important;
+
+        }
+
+    }
+
+
+    /* ---------- o botão ---------- */
+
+    .tema-botao{
+
+        position:fixed;
+
+        right:18px;
+
+        bottom:18px;
+
+        z-index:90;
+
+        width:44px;
+
+        height:44px;
+
+        display:grid;
+
+        place-items:center;
+
+        border:1px solid rgba(120,170,220,.34);
+
+        border-radius:4px;
+
+        background:#0a1d33;
+
+        color:#8cc2ff;
+
+        cursor:pointer;
+
+        box-shadow:0 10px 26px rgba(0,0,0,.4);
+
+        transition:border-color .18s, background .18s, color .18s, transform .18s;
+
+    }
+
+    .tema-botao:hover{
+
+        border-color:#2f7dff;
+
+        background:#2f7dff;
+
+        color:#ffffff;
+
+        transform:translateY(-2px);
+
+    }
+
+    .tema-botao svg{ width:19px; height:19px; stroke-width:1.8; }
+
+    html[data-tema="claro"] .tema-botao{
+
+        border-color:rgba(20,60,100,.22);
+
+        background:#ffffff;
+
+        color:#1b5fd9;
+
+        box-shadow:0 10px 26px rgba(20,60,100,.16);
+
+    }
+
+    html[data-tema="claro"] .tema-botao:hover{
+
+        border-color:#1b5fd9;
+
+        background:#1b5fd9;
+
+        color:#ffffff;
+
+    }
+
+    @media (max-width:520px){
+
+        .tema-botao{ right:14px; bottom:14px; width:40px; height:40px; }
+
+    }
+
+    `;
+
+
+
+    /* =================================================
+       INJETA O CSS
+    ================================================= */
+
+    const folha = document.createElement("style");
+
+    folha.id = "tema-claro-estilo";
+
+    folha.textContent = estilo;
+
+    document.head.appendChild(folha);
+
+
+
+    /* =================================================
+       APLICA O QUE ESTAVA SALVO
+    ================================================= */
+
+    if(localStorage.getItem(CHAVE) === "claro"){
+
+        document.documentElement.setAttribute("data-tema", "claro");
+
+    }
+
+
+
+    /* =================================================
+       O BOTÃO
+    ================================================= */
+
+    const sol = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.2"/>
+            <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6
+                     M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+        </svg>`;
+
+
+    const lua = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>
+        </svg>`;
+
+
+    function criarBotao(){
+
+        if(document.querySelector(".tema-botao")) return;
+
+
+        const botao = document.createElement("button");
+
+        botao.className = "tema-botao";
+
+        botao.type = "button";
+
+        document.body.appendChild(botao);
+
+
+        function pintar(){
+
+            const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+            botao.innerHTML = claro ? lua : sol;
+
+            botao.title = claro ? "Mudar para o modo escuro" : "Mudar para o modo claro";
+
+            botao.setAttribute("aria-label", botao.title);
+
+            botao.setAttribute("aria-pressed", claro ? "true" : "false");
+
+        }
+
+
+        botao.addEventListener("click", () => {
+
+            const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+
+            if(claro){
+
+                document.documentElement.removeAttribute("data-tema");
+
+                localStorage.setItem(CHAVE, "escuro");
+
+            } else {
+
+                document.documentElement.setAttribute("data-tema", "claro");
+
+                localStorage.setItem(CHAVE, "claro");
+
+            }
+
+
+            pintar();
+
+        });
+
+
+        pintar();
+
+    }
+
+
+    if(document.readyState === "loading"){
+
+        document.addEventListener("DOMContentLoaded", criarBotao);
+
+    } else {
+
+        criarBotao();
+
+    }
+
+
+
+    /* =================================================
+       ATALHO: Shift + T
+    ================================================= */
+
+    document.addEventListener("keydown", (evento) => {
+
+        if(evento.shiftKey && (evento.key === "T" || evento.key === "t")){
+
+            const alvo = evento.target;
+
+            if(alvo && ["INPUT", "TEXTAREA", "SELECT"].includes(alvo.tagName)) return;
+
+            const botao = document.querySelector(".tema-botao");
+
+            if(botao) botao.click();
+
+        }
+
+    });
+
+})();
     </script>
 
 </body>
