@@ -1065,6 +1065,229 @@
         });
 
     })();
+
+
+    /* =====================================================
+       VagaConnect · olhinho da senha
+
+       Põe um botão dentro do campo de senha para mostrar
+       e esconder o que está sendo digitado.
+    ===================================================== */
+
+    (function(){
+
+        "use strict";
+
+
+        const campo = document.querySelector('#employeeForm input[type="password"]');
+
+        if(!campo) return;
+
+
+        /* =================================================
+           ESTILO
+        ================================================= */
+
+        const estilo = document.createElement("style");
+
+        estilo.textContent = `
+
+        .campo-senha{
+
+            position:relative;
+
+            display:block;
+
+        }
+
+        /* espaço à direita para o botão não cobrir o texto */
+        .campo-senha input{
+
+            width:100%;
+
+            padding-right:42px !important;
+
+        }
+
+        .olho-senha{
+
+            position:absolute;
+
+            right:8px;
+
+            top:50%;
+
+            transform:translateY(-50%);
+
+            width:30px;
+
+            height:30px;
+
+            display:grid;
+
+            place-items:center;
+
+            padding:0;
+
+            border:none;
+
+            border-radius:4px;
+
+            background:transparent;
+
+            color:#6d89a6;
+
+            cursor:pointer;
+
+            transition:color .18s, background .18s;
+
+        }
+
+        .olho-senha:hover{
+
+            background:rgba(47,125,255,.14);
+
+            color:#8cc2ff;
+
+        }
+
+        .olho-senha:focus-visible{
+
+            outline:2px solid #8cc2ff;
+
+            outline-offset:1px;
+
+        }
+
+        .olho-senha svg{
+
+            width:17px;
+
+            height:17px;
+
+            stroke-width:1.8;
+
+        }
+
+        /* no modo claro */
+        html[data-tema="claro"] .olho-senha{
+
+            color:#6d89a6;
+
+        }
+
+        html[data-tema="claro"] .olho-senha:hover{
+
+            background:rgba(27,95,217,.1);
+
+            color:#1b5fd9;
+
+        }
+
+        html[data-tema="claro"] .olho-senha:focus-visible{
+
+            outline-color:#1b5fd9;
+
+        }
+
+        /* o olhinho nativo do Edge sai de cena, senão
+           ficariam dois botões no mesmo campo */
+        .campo-senha input::-ms-reveal{
+
+            display:none;
+
+        }
+
+        `;
+
+        document.head.appendChild(estilo);
+
+
+        /* =================================================
+           DESENHOS
+        ================================================= */
+
+        const olhoAberto = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>`;
+
+
+        const olhoFechado = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M2 12s3.5-6.5 10-6.5c1.6 0 3 .4 4.2 1"/>
+                <path d="M20.5 9.3c1 1.3 1.5 2.7 1.5 2.7s-3.5 6.5-10 6.5c-2.4 0-4.3-.9-5.8-2"/>
+                <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>
+                <path d="M3 3l18 18"/>
+            </svg>`;
+
+
+        /* =================================================
+           MONTAGEM
+           O input é envolvido por um <span> para o botão
+           poder ser posicionado em cima dele.
+        ================================================= */
+
+        const caixa = document.createElement("span");
+
+        caixa.className = "campo-senha";
+
+        campo.parentNode.insertBefore(caixa, campo);
+
+        caixa.appendChild(campo);
+
+
+        const botao = document.createElement("button");
+
+        botao.type = "button";
+
+        botao.className = "olho-senha";
+
+        caixa.appendChild(botao);
+
+
+        function pintar(){
+
+            const visivel = campo.type === "text";
+
+            botao.innerHTML = visivel ? olhoFechado : olhoAberto;
+
+            botao.title = visivel ? "Esconder a senha" : "Mostrar a senha";
+
+            botao.setAttribute("aria-label", botao.title);
+
+            botao.setAttribute("aria-pressed", visivel ? "true" : "false");
+
+        }
+
+
+        botao.addEventListener("click", () => {
+
+            // guarda onde está o cursor para não voltar ao fim
+            const inicio = campo.selectionStart;
+
+            const fim    = campo.selectionEnd;
+
+
+            campo.type = campo.type === "password" ? "text" : "password";
+
+            pintar();
+
+
+            campo.focus();
+
+            try { campo.setSelectionRange(inicio, fim); } catch(e){}
+
+        });
+
+
+        pintar();
+
+    })();
+  
   </script>
 </body>
 
