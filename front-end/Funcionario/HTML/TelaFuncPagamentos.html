@@ -140,6 +140,560 @@
 
       carregar().catch((error) => alert(error.message || "Verifique se o servidor está ligado."));
     }
+
+
+    /* =====================================================
+       VagaConnect · modo claro · Pagamentos do pátio
+    ===================================================== */
+
+    (function(){
+
+        "use strict";
+
+
+        console.log("[tema] pagamentos do pátio carregado");
+
+
+        const CHAVE = "vagaconnect-tema";
+
+
+        const estilo = `
+
+        html[data-tema="claro"]{
+
+            --tinta:#eef3f9;      --superficie:#ffffff;  --elevado:#f4f8fd;
+            --fundo:#eef3f9;      --painel:#ffffff;      --cartao:#f4f8fd;
+            --campo:#ffffff;      --bg:#eef3f9;          --card:#ffffff;
+
+            --risco:rgba(20,60,100,.14);       --risco-forte:rgba(20,60,100,.3);
+            --linha:rgba(20,60,100,.14);       --linha-forte:rgba(20,60,100,.3);
+            --border:rgba(20,60,100,.14);      --line:rgba(20,60,100,.14);
+
+            --texto:#0b2036;   --apagado:#46627f;  --fraco:#6d89a6;
+            --text:#0b2036;    --muted:#46627f;    --ink:#0b2036;
+
+            --azul:#1b5fd9;    --azul-claro:#1257c7;   --blue:#1b5fd9;
+            --verde:#0a7a4c;   --ambar:#8a5605;        --vermelho:#a82222;
+
+            color-scheme: light;
+
+        }
+
+
+        /* ---------- fundo ---------- */
+
+        html[data-tema="claro"] body{
+
+            color:#0b2036 !important;
+
+            background:
+                repeating-linear-gradient(0deg,  rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+                repeating-linear-gradient(90deg, rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+                linear-gradient(180deg, #f7fafd 0%, #eef3f9 60%) !important;
+
+            background-attachment:fixed !important;
+
+        }
+
+        html[data-tema="claro"] .app-shell{ background:transparent !important; }
+
+        html[data-tema="claro"] ::selection{ background:rgba(27,95,217,.2); }
+
+
+        /* ---------- sidebar ---------- */
+
+        html[data-tema="claro"] .sidebar{
+
+            background:#ffffff !important;
+
+            border-right-color:rgba(20,60,100,.14) !important;
+
+            box-shadow:0 10px 30px rgba(20,60,100,.07);
+
+        }
+
+        html[data-tema="claro"] .logo{
+
+            color:#0b2036 !important;
+
+            border-bottom-color:rgba(20,60,100,.14) !important;
+
+        }
+
+        /* a logo está dentro de outra logo: a de dentro
+           não leva borda nem espaçamento */
+        html[data-tema="claro"] .logo .logo{
+
+            border:none !important;
+
+            padding:0 !important;
+
+            margin:0 !important;
+
+        }
+
+        html[data-tema="claro"] .logo i,
+        html[data-tema="claro"] .logo span,
+        html[data-tema="claro"] .logo svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a{ color:#46627f !important; }
+
+        html[data-tema="claro"] .sidebar nav a svg{ color:#64809c !important; }
+
+        html[data-tema="claro"] .sidebar nav a:hover{
+
+            background:rgba(27,95,217,.09) !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav a:hover svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a.active{
+
+            background:rgba(27,95,217,.13) !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav a.active svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a::before{ background:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a#btnSair:hover{
+
+            background:rgba(198,47,47,.09) !important;
+
+            color:#a82222 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav a#btnSair:hover svg{ color:#c62f2f !important; }
+
+
+        /* ---------- usuário no pé da sidebar ---------- */
+
+        html[data-tema="claro"] .sidebar-user{
+
+            background:#f4f8fd !important;
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            border-top-color:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] .user-avatar{
+
+            background:linear-gradient(135deg,#2a72ea,#1b5fd9) !important;
+
+            border-color:transparent !important;
+
+            color:#ffffff !important;
+
+            box-shadow:0 6px 16px rgba(27,95,217,.24);
+
+        }
+
+        html[data-tema="claro"] .user-info strong{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .user-info span{ color:#6d89a6 !important; }
+
+
+        /* ---------- topo ---------- */
+
+        html[data-tema="claro"] .topbar{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            border-bottom-color:rgba(20,60,100,.14) !important;
+
+            box-shadow:0 6px 20px rgba(20,60,100,.06);
+
+        }
+
+        html[data-tema="claro"] .page-title p{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .page-title h1{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .mobile-menu{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.3) !important;
+
+            color:#46627f !important;
+
+        }
+
+
+        /* ---------- card do total ----------
+           É o único card da tela, e o número é dinheiro
+           entrando: fica em verde.
+        */
+
+        html[data-tema="claro"] .stat-card{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.12) !important;
+
+            box-shadow:0 8px 24px rgba(20,60,100,.07) !important;
+
+        }
+
+        html[data-tema="claro"] .stat-card:hover{
+
+            border-color:rgba(27,95,217,.3) !important;
+
+            box-shadow:0 12px 30px rgba(20,60,100,.11) !important;
+
+        }
+
+        html[data-tema="claro"] .stat-card p{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .stat-card strong{ color:#0a7a4c !important; }
+
+        html[data-tema="claro"] .stat-card small{ color:#7b95ae !important; }
+
+        html[data-tema="claro"] .stat-icon.green{
+
+            background:rgba(15,157,99,.12) !important;
+
+            border-color:rgba(15,157,99,.28) !important;
+
+            color:#0a7a4c !important;
+
+        }
+
+        /* as outras cores ficam prontas, caso você adicione
+           mais cards aqui depois */
+        html[data-tema="claro"] .stat-icon.blue{
+
+            background:rgba(27,95,217,.12) !important;
+
+            border-color:rgba(27,95,217,.26) !important;
+
+            color:#1b5fd9 !important;
+
+        }
+
+        html[data-tema="claro"] .stat-icon.purple{
+
+            background:rgba(91,63,208,.12) !important;
+
+            border-color:rgba(91,63,208,.26) !important;
+
+            color:#5b3fd0 !important;
+
+        }
+
+        html[data-tema="claro"] .stat-icon.orange{
+
+            background:rgba(154,84,5,.12) !important;
+
+            border-color:rgba(154,84,5,.26) !important;
+
+            color:#9a5405 !important;
+
+        }
+
+
+        /* ---------- painel ---------- */
+
+        html[data-tema="claro"] .panel{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.12) !important;
+
+            box-shadow:0 10px 28px rgba(20,60,100,.07) !important;
+
+        }
+
+        html[data-tema="claro"] .panel-header{
+
+            border-bottom-color:rgba(20,60,100,.12) !important;
+
+        }
+
+        html[data-tema="claro"] .panel-header h2{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .panel-header p{ color:#6d89a6 !important; }
+
+
+        /* ---------- tabela ---------- */
+
+        html[data-tema="claro"] th{
+
+            border-bottom-color:rgba(20,60,100,.18) !important;
+
+            background:#f1f6fc !important;
+
+            color:#6d89a6 !important;
+
+        }
+
+        html[data-tema="claro"] td{
+
+            border-bottom-color:rgba(20,60,100,.1) !important;
+
+            color:#132c46 !important;
+
+        }
+
+        html[data-tema="claro"] tbody tr:hover{
+
+            background:rgba(27,95,217,.055) !important;
+
+        }
+
+        /* o valor de cada linha vem dentro de um <b> */
+        html[data-tema="claro"] td b{ color:#0a7a4c !important; }
+
+        html[data-tema="claro"] .vazio{ color:#6d89a6 !important; }
+
+
+        /* ---------- celular ---------- */
+
+        @media (max-width:900px){
+
+            html[data-tema="claro"] .sidebar{ background:#ffffff !important; }
+
+            html[data-tema="claro"] .sidebar.open{
+
+                box-shadow:14px 0 40px rgba(20,60,100,.2) !important;
+
+            }
+
+        }
+
+
+        /* ---------- o botão do tema ---------- */
+
+        .tema-botao{
+
+            position:fixed;
+
+            right:18px;
+
+            bottom:18px;
+
+            z-index:90;
+
+            width:44px;
+
+            height:44px;
+
+            display:grid;
+
+            place-items:center;
+
+            border:1px solid rgba(120,170,220,.34);
+
+            border-radius:10px;
+
+            background:#0a1d33;
+
+            color:#8cc2ff;
+
+            cursor:pointer;
+
+            box-shadow:0 10px 26px rgba(0,0,0,.4);
+
+            transition:border-color .18s, background .18s, color .18s, transform .18s;
+
+        }
+
+        .tema-botao:hover{
+
+            border-color:#2f7dff;
+
+            background:#2f7dff;
+
+            color:#ffffff;
+
+            transform:translateY(-2px);
+
+        }
+
+        .tema-botao svg{ width:19px; height:19px; stroke-width:1.8; }
+
+        html[data-tema="claro"] .tema-botao{
+
+            border-color:rgba(20,60,100,.22);
+
+            background:#ffffff;
+
+            color:#1b5fd9;
+
+            box-shadow:0 10px 26px rgba(20,60,100,.16);
+
+        }
+
+        html[data-tema="claro"] .tema-botao:hover{
+
+            border-color:#1b5fd9;
+
+            background:#1b5fd9;
+
+            color:#ffffff;
+
+        }
+
+        @media (max-width:520px){
+
+            .tema-botao{ right:14px; bottom:14px; width:40px; height:40px; }
+
+        }
+
+        `;
+
+
+        /* =================================================
+           INJETA O CSS
+        ================================================= */
+
+        const folha = document.createElement("style");
+
+        folha.id = "tema-claro-estilo";
+
+        folha.textContent = estilo;
+
+        document.head.appendChild(folha);
+
+
+        /* =================================================
+           APLICA O QUE ESTAVA SALVO
+        ================================================= */
+
+        if(localStorage.getItem(CHAVE) === "claro"){
+
+            document.documentElement.setAttribute("data-tema", "claro");
+
+        }
+
+
+        /* =================================================
+           DESENHOS DO BOTÃO
+        ================================================= */
+
+        const sol = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.2"/>
+                <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6
+                         M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+            </svg>`;
+
+
+        const lua = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>
+            </svg>`;
+
+
+        /* =================================================
+           BOTÃO
+        ================================================= */
+
+        function criarBotao(){
+
+            if(document.querySelector(".tema-botao")) return;
+
+
+            const botao = document.createElement("button");
+
+            botao.className = "tema-botao";
+
+            botao.type = "button";
+
+            document.body.appendChild(botao);
+
+
+            function pintar(){
+
+                const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+                botao.innerHTML = claro ? lua : sol;
+
+                botao.title = claro ? "Mudar para o modo escuro" : "Mudar para o modo claro";
+
+                botao.setAttribute("aria-label", botao.title);
+
+                botao.setAttribute("aria-pressed", claro ? "true" : "false");
+
+            }
+
+
+            botao.addEventListener("click", () => {
+
+                const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+
+                if(claro){
+
+                    document.documentElement.removeAttribute("data-tema");
+
+                    localStorage.setItem(CHAVE, "escuro");
+
+                } else {
+
+                    document.documentElement.setAttribute("data-tema", "claro");
+
+                    localStorage.setItem(CHAVE, "claro");
+
+                }
+
+
+                pintar();
+
+            });
+
+
+            pintar();
+
+        }
+
+
+        if(document.readyState === "loading"){
+
+            document.addEventListener("DOMContentLoaded", criarBotao);
+
+        } else {
+
+            criarBotao();
+
+        }
+
+
+        /* =================================================
+           ATALHO DE TECLADO: Shift + T
+        ================================================= */
+
+        document.addEventListener("keydown", (evento) => {
+
+            if(evento.shiftKey && (evento.key === "T" || evento.key === "t")){
+
+                const alvo = evento.target;
+
+                if(alvo && ["INPUT", "TEXTAREA", "SELECT"].includes(alvo.tagName)) return;
+
+                const botao = document.querySelector(".tema-botao");
+
+                if(botao) botao.click();
+
+            }
+
+        });
+
+    })();
+
   </script>
 </body>
 

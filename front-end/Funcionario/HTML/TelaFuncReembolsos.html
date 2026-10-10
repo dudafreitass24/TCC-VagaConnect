@@ -1119,6 +1119,945 @@ function aviso(tom, titulo, texto){
     while(caixaAvisos.children.length > 3) caixaAvisos.firstElementChild.remove();
 
 }
+
+    /* =====================================================
+       VagaConnect · modo claro · Reembolsos (funcionário)
+    ===================================================== */
+
+    (function(){
+
+        "use strict";
+
+
+        console.log("[tema] reembolsos do funcionário carregado");
+
+
+        const CHAVE = "vagaconnect-tema";
+
+
+        const estilo = `
+
+        /* ---------- conserto que vale nos dois temas ----------
+           Sem isto o .modal-fundo fica invisível mas continua
+           cobrindo a tela, e nada da página aceita clique.
+        */
+
+        .modal-fundo[hidden]{ display:none !important; }
+
+
+        html[data-tema="claro"]{
+
+            --tinta:#eef3f9;      --superficie:#ffffff;  --elevado:#f4f8fd;
+            --fundo:#eef3f9;      --painel:#ffffff;      --cartao:#f4f8fd;
+            --campo:#ffffff;      --bg:#eef3f9;          --card:#ffffff;
+
+            --risco:rgba(20,60,100,.14);       --risco-forte:rgba(20,60,100,.3);
+            --linha:rgba(20,60,100,.14);       --linha-forte:rgba(20,60,100,.3);
+            --border:rgba(20,60,100,.14);      --line:rgba(20,60,100,.14);
+
+            --texto:#0b2036;   --apagado:#46627f;  --fraco:#6d89a6;
+            --text:#0b2036;    --muted:#46627f;    --ink:#0b2036;
+
+            --azul:#1b5fd9;    --azul-claro:#1257c7;   --blue:#1b5fd9;
+            --verde:#0a7a4c;   --ambar:#8a5605;        --vermelho:#a82222;
+            --roxo:#5b3fd0;
+
+            color-scheme: light;
+
+        }
+
+
+        /* ---------- fundo ---------- */
+
+        html[data-tema="claro"] body{
+
+            color:#0b2036 !important;
+
+            background:
+                repeating-linear-gradient(0deg,  rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+                repeating-linear-gradient(90deg, rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+                linear-gradient(180deg, #f7fafd 0%, #eef3f9 60%) !important;
+
+            background-attachment:fixed !important;
+
+        }
+
+        html[data-tema="claro"] .app-shell{ background:transparent !important; }
+
+        html[data-tema="claro"] ::selection{ background:rgba(27,95,217,.2); }
+
+
+        /* ---------- sidebar ---------- */
+
+        html[data-tema="claro"] .sidebar{
+
+            background:#ffffff !important;
+
+            border-right-color:rgba(20,60,100,.14) !important;
+
+            box-shadow:0 10px 30px rgba(20,60,100,.07);
+
+        }
+
+        html[data-tema="claro"] .logo{
+
+            color:#0b2036 !important;
+
+            border-bottom-color:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] .logo i,
+        html[data-tema="claro"] .logo span,
+        html[data-tema="claro"] .logo svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a{ color:#46627f !important; }
+
+        html[data-tema="claro"] .sidebar nav a svg{ color:#64809c !important; }
+
+        html[data-tema="claro"] .sidebar nav a:hover{
+
+            background:rgba(27,95,217,.09) !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav a:hover svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a.active,
+        html[data-tema="claro"] .sidebar nav .active{
+
+            background:rgba(27,95,217,.13) !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav .active svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a::before{ background:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a#btnSair:hover{
+
+            background:rgba(198,47,47,.09) !important;
+
+            color:#a82222 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav a#btnSair:hover svg{ color:#c62f2f !important; }
+
+
+        /* ---------- perfil ---------- */
+
+        html[data-tema="claro"] .profile{
+
+            background:#f4f8fd !important;
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            border-top-color:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] .profile .avatar{
+
+            background:linear-gradient(135deg,#2a72ea,#1b5fd9) !important;
+
+            border-color:transparent !important;
+
+            color:#ffffff !important;
+
+            box-shadow:0 6px 16px rgba(27,95,217,.24);
+
+        }
+
+        html[data-tema="claro"] .profile strong{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .profile small,
+        html[data-tema="claro"] .profile > svg{ color:#6d89a6 !important; }
+
+
+        /* ---------- topo ---------- */
+
+        html[data-tema="claro"] .topbar{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            border-bottom-color:rgba(20,60,100,.14) !important;
+
+            box-shadow:0 6px 20px rgba(20,60,100,.06);
+
+        }
+
+        html[data-tema="claro"] .topbar h1{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .topbar p{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .menu-button{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.3) !important;
+
+            color:#46627f !important;
+
+        }
+
+        html[data-tema="claro"] .menu-button:hover{
+
+            background:rgba(27,95,217,.1) !important;
+
+            border-color:#1b5fd9 !important;
+
+            color:#1b5fd9 !important;
+
+        }
+
+        html[data-tema="claro"] .primary-button{
+
+            border-color:#1b5fd9 !important;
+
+            color:#1b5fd9 !important;
+
+        }
+
+        html[data-tema="claro"] .primary-button::before{ background:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .primary-button:hover{ color:#ffffff !important; }
+
+        html[data-tema="claro"] .primary-button svg{ color:inherit !important; }
+
+
+        /* ---------- cards ----------
+           1º Pendentes · 2º A devolver · 3º Aprovados
+           4º Recusados
+        */
+
+        html[data-tema="claro"] .cards{
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            background:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] .cards .card{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.12) !important;
+
+            box-shadow:0 8px 24px rgba(20,60,100,.07) !important;
+
+        }
+
+        html[data-tema="claro"] .cards .card:hover{
+
+            background:#f4f8fd !important;
+
+            border-color:rgba(27,95,217,.3) !important;
+
+        }
+
+        html[data-tema="claro"] .cards .card span,
+        html[data-tema="claro"] .cards .card p{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .cards .card h2{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .cards .card:nth-child(1) h2{ color:#8a5605 !important; }
+
+        html[data-tema="claro"] .cards .card:nth-child(2) h2{ color:#164da8 !important; }
+
+        html[data-tema="claro"] .cards .card:nth-child(3) h2{ color:#0a7a4c !important; }
+
+        html[data-tema="claro"] .cards .card:nth-child(4) h2{ color:#a82222 !important; }
+
+
+        /* ---------- painel e filtros ---------- */
+
+        html[data-tema="claro"] .panel{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.12) !important;
+
+            box-shadow:0 10px 28px rgba(20,60,100,.07) !important;
+
+        }
+
+        html[data-tema="claro"] .toolbar{
+
+            border-bottom-color:rgba(20,60,100,.12) !important;
+
+        }
+
+        html[data-tema="claro"] .toolbar label:not(.search-box){ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .toolbar label:not(.search-box):focus-within{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .toolbar select{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.22) !important;
+
+            color:#0b2036 !important;
+
+            color-scheme: light !important;
+
+        }
+
+        html[data-tema="claro"] .toolbar select option{
+
+            background:#ffffff !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] .toolbar select:hover{ border-color:#1257c7 !important; }
+
+        html[data-tema="claro"] .toolbar select:focus{
+
+            background:#ffffff !important;
+
+            border-color:#1b5fd9 !important;
+
+            box-shadow:inset 2px 0 0 #1b5fd9 !important;
+
+            outline:none !important;
+
+        }
+
+        html[data-tema="claro"] .search-box{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.22) !important;
+
+            color:#7b95ae !important;
+
+        }
+
+        html[data-tema="claro"] .search-box svg{ color:#7b95ae !important; }
+
+        html[data-tema="claro"] .search-box:focus-within{
+
+            background:#ffffff !important;
+
+            border-color:#1b5fd9 !important;
+
+            box-shadow:inset 2px 0 0 #1b5fd9 !important;
+
+            color:#1b5fd9 !important;
+
+        }
+
+        html[data-tema="claro"] .search-box:focus-within svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .search-box input{
+
+            background:transparent !important;
+
+            color:#0b2036 !important;
+
+            color-scheme: light !important;
+
+        }
+
+        html[data-tema="claro"] .search-box input::placeholder{ color:#8ba1b8 !important; }
+
+        html[data-tema="claro"] input[type="search"]::-webkit-search-cancel-button{
+
+            filter:none !important;
+
+        }
+
+
+        /* ---------- tabela ---------- */
+
+        html[data-tema="claro"] th{
+
+            border-bottom-color:rgba(20,60,100,.18) !important;
+
+            background:#f1f6fc !important;
+
+            color:#6d89a6 !important;
+
+        }
+
+        html[data-tema="claro"] td{
+
+            border-bottom-color:rgba(20,60,100,.1) !important;
+
+            color:#132c46 !important;
+
+        }
+
+        html[data-tema="claro"] tbody tr:hover{
+
+            background:rgba(27,95,217,.055) !important;
+
+        }
+
+        html[data-tema="claro"] .vazio{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .table-count{
+
+            border-top-color:rgba(20,60,100,.14) !important;
+
+            color:#6d89a6 !important;
+
+        }
+
+
+        /* ---------- colunas ---------- */
+
+        html[data-tema="claro"] .protocolo{ color:#164da8 !important; }
+
+        html[data-tema="claro"] .quando{ color:#46627f !important; }
+
+        html[data-tema="claro"] .cliente strong,
+        html[data-tema="claro"] .reserva strong{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .cliente small,
+        html[data-tema="claro"] .reserva small{ color:#7b95ae !important; }
+
+        html[data-tema="claro"] .valor{ color:#0b2036 !important; }
+
+        /* o valor a devolver é o número que importa na linha */
+        html[data-tema="claro"] .devolver{ color:#0a7a4c !important; }
+
+        html[data-tema="claro"] .motivo{
+
+            border-color:rgba(20,60,100,.3) !important;
+
+            color:#46627f !important;
+
+        }
+
+        /* motivo escrito pelo cliente ("Outro: ...") */
+        html[data-tema="claro"] .motivo.livre{
+
+            border-color:rgba(91,63,208,.4) !important;
+
+            background:rgba(91,63,208,.08) !important;
+
+            color:#4a2fb8 !important;
+
+        }
+
+        html[data-tema="claro"] .observacao{ color:#7b95ae !important; }
+
+
+        /* ---------- etiquetas de status ----------
+           O seu JS usa status.toLowerCase(), então vem
+           pendente / aprovada / recusada.
+        */
+
+        html[data-tema="claro"] .status{
+
+            border-color:rgba(20,60,100,.3) !important;
+
+            background:rgba(20,60,100,.07) !important;
+
+            color:#46627f !important;
+
+        }
+
+        html[data-tema="claro"] .status.pendente,
+        html[data-tema="claro"] .pendente{
+
+            border-color:rgba(168,106,6,.3) !important;
+
+            background:rgba(168,106,6,.1) !important;
+
+            color:#8a5605 !important;
+
+        }
+
+        html[data-tema="claro"] .status.aprovada,
+        html[data-tema="claro"] .aprovada{
+
+            border-color:rgba(15,157,99,.32) !important;
+
+            background:rgba(15,157,99,.1) !important;
+
+            color:#0a7a4c !important;
+
+        }
+
+        html[data-tema="claro"] .status.recusada,
+        html[data-tema="claro"] .recusada{
+
+            border-color:rgba(198,47,47,.3) !important;
+
+            background:rgba(198,47,47,.1) !important;
+
+            color:#a82222 !important;
+
+        }
+
+
+        /* ---------- botões de aprovar e recusar ---------- */
+
+        html[data-tema="claro"] .row-actions button{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.2) !important;
+
+            color:#46627f !important;
+
+        }
+
+        html[data-tema="claro"] .row-actions .aprovar{
+
+            background:rgba(15,157,99,.07) !important;
+
+            border-color:rgba(15,157,99,.4) !important;
+
+            color:#0a7a4c !important;
+
+        }
+
+        html[data-tema="claro"] .row-actions .aprovar:hover{
+
+            background:#0f9d63 !important;
+
+            border-color:#0f9d63 !important;
+
+            color:#ffffff !important;
+
+        }
+
+        html[data-tema="claro"] .row-actions .recusar{
+
+            background:rgba(198,47,47,.06) !important;
+
+            border-color:rgba(198,47,47,.34) !important;
+
+            color:#a82222 !important;
+
+        }
+
+        html[data-tema="claro"] .row-actions .recusar:hover{
+
+            background:#c62f2f !important;
+
+            border-color:#c62f2f !important;
+
+            color:#ffffff !important;
+
+        }
+
+        html[data-tema="claro"] .row-actions button:focus-visible{
+
+            outline:2px solid #1b5fd9 !important;
+
+            outline-offset:2px;
+
+        }
+
+        /* a data da decisão, nos pedidos já respondidos */
+        html[data-tema="claro"] .sem-acao{ color:#7b95ae !important; }
+
+
+        /* ---------- janela de decisão ----------
+           O --c e o --f vêm do script, nos tons do escuro
+           (#3ddc97 e #ff7a7a). Estilo inline o CSS não
+           sobrescreve, então eu escureço o uso deles com
+           color-mix: o verde segue verde, só mais fechado.
+        */
+
+        html[data-tema="claro"] .modal-fundo{
+
+            background:rgba(20,48,80,.45) !important;
+
+        }
+
+        html[data-tema="claro"] .modal{
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            border-top-color:color-mix(in srgb, var(--c,#1b5fd9) 68%, #0b2036) !important;
+
+            background:#ffffff !important;
+
+            box-shadow:0 24px 60px rgba(20,60,100,.22) !important;
+
+        }
+
+        html[data-tema="claro"] .modal h3{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .modal > p{ color:#46627f !important; }
+
+        html[data-tema="claro"] .modal-icone{
+
+            background:color-mix(in srgb, var(--c,#1b5fd9) 14%, #ffffff) !important;
+
+            border-color:color-mix(in srgb, var(--c,#1b5fd9) 46%, #ffffff) !important;
+
+            color:color-mix(in srgb, var(--c,#1b5fd9) 64%, #0b2036) !important;
+
+        }
+
+        html[data-tema="claro"] .modal-valores{
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            background:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] .modal-valores div{ background:#f4f8fd !important; }
+
+        html[data-tema="claro"] .modal-valores span{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .modal-valores strong{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .modal-valores .verde{ color:#0a7a4c !important; }
+
+        html[data-tema="claro"] .modal-campo span{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .modal-campo textarea{
+
+            border-color:rgba(20,60,100,.22) !important;
+
+            background:#ffffff !important;
+
+            color:#0b2036 !important;
+
+            color-scheme: light !important;
+
+        }
+
+        html[data-tema="claro"] .modal-campo textarea::placeholder{
+
+            color:#8ba1b8 !important;
+
+        }
+
+        html[data-tema="claro"] .modal-campo textarea:focus{
+
+            background:#ffffff !important;
+
+            border-color:#1b5fd9 !important;
+
+            box-shadow:inset 2px 0 0 #1b5fd9 !important;
+
+        }
+
+        html[data-tema="claro"] .btn-nao{
+
+            border-color:rgba(20,60,100,.3) !important;
+
+            color:#46627f !important;
+
+        }
+
+        html[data-tema="claro"] .btn-nao:hover{
+
+            border-color:#1b5fd9 !important;
+
+            color:#1b5fd9 !important;
+
+        }
+
+        html[data-tema="claro"] .btn-sim{
+
+            border-color:color-mix(in srgb, var(--c,#1b5fd9) 68%, #0b2036) !important;
+
+            color:color-mix(in srgb, var(--c,#1b5fd9) 64%, #0b2036) !important;
+
+        }
+
+        html[data-tema="claro"] .btn-sim::before{
+
+            background:color-mix(in srgb, var(--c,#1b5fd9) 68%, #0b2036) !important;
+
+        }
+
+        /* no escuro o texto virava escuro sobre o
+           preenchimento; no claro o preenchimento é escuro,
+           então o texto vira branco */
+        html[data-tema="claro"] .btn-sim:hover{ color:#ffffff !important; }
+
+        html[data-tema="claro"] .btn-sim:disabled{
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            color:#9bb0c4 !important;
+
+        }
+
+
+        /* ---------- avisos ---------- */
+
+        html[data-tema="claro"] .vc-aviso{
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            border-left-color:color-mix(in srgb, var(--c,#1b5fd9) 66%, #0b2036) !important;
+
+            background:#ffffff !important;
+
+            box-shadow:0 14px 34px rgba(20,60,100,.18) !important;
+
+        }
+
+        html[data-tema="claro"] .vc-aviso b{
+
+            color:color-mix(in srgb, var(--c,#1b5fd9) 62%, #0b2036) !important;
+
+        }
+
+        html[data-tema="claro"] .vc-aviso span{ color:#46627f !important; }
+
+
+        /* ---------- celular ---------- */
+
+        @media (max-width:900px){
+
+            html[data-tema="claro"] .sidebar{ background:#ffffff !important; }
+
+            html[data-tema="claro"] .sidebar.open{
+
+                box-shadow:14px 0 40px rgba(20,60,100,.2) !important;
+
+            }
+
+        }
+
+
+        /* ---------- o botão do tema ----------
+           z-index abaixo da janela de decisão.
+        */
+
+        .tema-botao{
+
+            position:fixed;
+
+            right:18px;
+
+            bottom:18px;
+
+            z-index:90;
+
+            width:44px;
+
+            height:44px;
+
+            display:grid;
+
+            place-items:center;
+
+            border:1px solid rgba(120,170,220,.34);
+
+            border-radius:4px;
+
+            background:#0a1d33;
+
+            color:#8cc2ff;
+
+            cursor:pointer;
+
+            box-shadow:0 10px 26px rgba(0,0,0,.4);
+
+            transition:border-color .18s, background .18s, color .18s, transform .18s;
+
+        }
+
+        .tema-botao:hover{
+
+            border-color:#2f7dff;
+
+            background:#2f7dff;
+
+            color:#ffffff;
+
+            transform:translateY(-2px);
+
+        }
+
+        .tema-botao svg{ width:19px; height:19px; stroke-width:1.8; }
+
+        html[data-tema="claro"] .tema-botao{
+
+            border-color:rgba(20,60,100,.22);
+
+            background:#ffffff;
+
+            color:#1b5fd9;
+
+            box-shadow:0 10px 26px rgba(20,60,100,.16);
+
+        }
+
+        html[data-tema="claro"] .tema-botao:hover{
+
+            border-color:#1b5fd9;
+
+            background:#1b5fd9;
+
+            color:#ffffff;
+
+        }
+
+        @media (max-width:520px){
+
+            .tema-botao{ right:14px; bottom:14px; width:40px; height:40px; }
+
+        }
+
+        `;
+
+
+        /* =================================================
+           INJETA O CSS
+        ================================================= */
+
+        const folha = document.createElement("style");
+
+        folha.id = "tema-claro-estilo";
+
+        folha.textContent = estilo;
+
+        document.head.appendChild(folha);
+
+
+        /* =================================================
+           APLICA O QUE ESTAVA SALVO
+        ================================================= */
+
+        if(localStorage.getItem(CHAVE) === "claro"){
+
+            document.documentElement.setAttribute("data-tema", "claro");
+
+        }
+
+
+        /* =================================================
+           DESENHOS DO BOTÃO
+        ================================================= */
+
+        const sol = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.2"/>
+                <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6
+                         M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+            </svg>`;
+
+
+        const lua = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>
+            </svg>`;
+
+
+        /* =================================================
+           BOTÃO
+        ================================================= */
+
+        function criarBotao(){
+
+            if(document.querySelector(".tema-botao")) return;
+
+
+            const botao = document.createElement("button");
+
+            botao.className = "tema-botao";
+
+            botao.type = "button";
+
+            document.body.appendChild(botao);
+
+
+            function pintar(){
+
+                const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+                botao.innerHTML = claro ? lua : sol;
+
+                botao.title = claro ? "Mudar para o modo escuro" : "Mudar para o modo claro";
+
+                botao.setAttribute("aria-label", botao.title);
+
+                botao.setAttribute("aria-pressed", claro ? "true" : "false");
+
+            }
+
+
+            botao.addEventListener("click", () => {
+
+                const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+
+                if(claro){
+
+                    document.documentElement.removeAttribute("data-tema");
+
+                    localStorage.setItem(CHAVE, "escuro");
+
+                } else {
+
+                    document.documentElement.setAttribute("data-tema", "claro");
+
+                    localStorage.setItem(CHAVE, "claro");
+
+                }
+
+
+                pintar();
+
+            });
+
+
+            pintar();
+
+        }
+
+
+        if(document.readyState === "loading"){
+
+            document.addEventListener("DOMContentLoaded", criarBotao);
+
+        } else {
+
+            criarBotao();
+
+        }
+
+
+        /* =================================================
+           ATALHO DE TECLADO: Shift + T
+           Não dispara enquanto você digita.
+        ================================================= */
+
+        document.addEventListener("keydown", (evento) => {
+
+            if(evento.shiftKey && (evento.key === "T" || evento.key === "t")){
+
+                const alvo = evento.target;
+
+                if(alvo && ["INPUT", "TEXTAREA", "SELECT"].includes(alvo.tagName)) return;
+
+                const botao = document.querySelector(".tema-botao");
+
+                if(botao) botao.click();
+
+            }
+
+        });
+
+    })();
+
 </script>
 
 

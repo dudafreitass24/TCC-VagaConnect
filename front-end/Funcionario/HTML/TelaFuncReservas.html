@@ -346,6 +346,719 @@
 
       carregar().catch((error) => alert(error.message || "Verifique se o servidor está ligado."));
     }
+
+    /* =====================================================
+       VagaConnect · modo claro · Reservas do pátio
+    ===================================================== */
+
+    (function(){
+
+        "use strict";
+
+
+        console.log("[tema] reservas do pátio carregado");
+
+
+        const CHAVE = "vagaconnect-tema";
+
+
+        const estilo = `
+
+        html[data-tema="claro"]{
+
+            --tinta:#eef3f9;      --superficie:#ffffff;  --elevado:#f4f8fd;
+            --fundo:#eef3f9;      --painel:#ffffff;      --cartao:#f4f8fd;
+            --campo:#ffffff;      --bg:#eef3f9;          --card:#ffffff;
+
+            --risco:rgba(20,60,100,.14);       --risco-forte:rgba(20,60,100,.3);
+            --linha:rgba(20,60,100,.14);       --linha-forte:rgba(20,60,100,.3);
+            --border:rgba(20,60,100,.14);      --line:rgba(20,60,100,.14);
+
+            --texto:#0b2036;   --apagado:#46627f;  --fraco:#6d89a6;
+            --text:#0b2036;    --muted:#46627f;    --ink:#0b2036;
+
+            --azul:#1b5fd9;    --azul-claro:#1257c7;   --blue:#1b5fd9;
+            --verde:#0a7a4c;   --ambar:#8a5605;        --vermelho:#a82222;
+
+            color-scheme: light;
+
+        }
+
+
+        /* ---------- fundo ---------- */
+
+        html[data-tema="claro"] body{
+
+            color:#0b2036 !important;
+
+            background:
+                repeating-linear-gradient(0deg,  rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+                repeating-linear-gradient(90deg, rgba(20,60,100,.05) 0 1px, transparent 1px 68px),
+                linear-gradient(180deg, #f7fafd 0%, #eef3f9 60%) !important;
+
+            background-attachment:fixed !important;
+
+        }
+
+        html[data-tema="claro"] .app-shell{ background:transparent !important; }
+
+        html[data-tema="claro"] ::selection{ background:rgba(27,95,217,.2); }
+
+
+        /* ---------- sidebar ---------- */
+
+        html[data-tema="claro"] .sidebar{
+
+            background:#ffffff !important;
+
+            border-right-color:rgba(20,60,100,.14) !important;
+
+            box-shadow:0 10px 30px rgba(20,60,100,.07);
+
+        }
+
+        html[data-tema="claro"] .logo{
+
+            color:#0b2036 !important;
+
+            border-bottom-color:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] .logo .logo{
+
+            border:none !important;
+
+            padding:0 !important;
+
+            margin:0 !important;
+
+        }
+
+        html[data-tema="claro"] .logo i,
+        html[data-tema="claro"] .logo span,
+        html[data-tema="claro"] .logo svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a{ color:#46627f !important; }
+
+        html[data-tema="claro"] .sidebar nav a svg{ color:#64809c !important; }
+
+        html[data-tema="claro"] .sidebar nav a:hover{
+
+            background:rgba(27,95,217,.09) !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav a:hover svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a.active{
+
+            background:rgba(27,95,217,.13) !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav a.active svg{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a::before{ background:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .sidebar nav a#btnSair:hover{
+
+            background:rgba(198,47,47,.09) !important;
+
+            color:#a82222 !important;
+
+        }
+
+        html[data-tema="claro"] .sidebar nav a#btnSair:hover svg{ color:#c62f2f !important; }
+
+
+        /* ---------- usuário no pé da sidebar ---------- */
+
+        html[data-tema="claro"] .sidebar-user{
+
+            background:#f4f8fd !important;
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            border-top-color:rgba(20,60,100,.14) !important;
+
+        }
+
+        html[data-tema="claro"] .user-avatar{
+
+            background:linear-gradient(135deg,#2a72ea,#1b5fd9) !important;
+
+            border-color:transparent !important;
+
+            color:#ffffff !important;
+
+            box-shadow:0 6px 16px rgba(27,95,217,.24);
+
+        }
+
+        html[data-tema="claro"] .user-info strong{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .user-info span{ color:#6d89a6 !important; }
+
+
+        /* ---------- topo ---------- */
+
+        html[data-tema="claro"] .topbar{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.14) !important;
+
+            border-bottom-color:rgba(20,60,100,.14) !important;
+
+            box-shadow:0 6px 20px rgba(20,60,100,.06);
+
+        }
+
+        html[data-tema="claro"] .page-title p{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .page-title h1{ color:#0b2036 !important; }
+
+        html[data-tema="claro"] .mobile-menu{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.3) !important;
+
+            color:#46627f !important;
+
+        }
+
+
+        /* ---------- painel e filtros ---------- */
+
+        html[data-tema="claro"] .panel{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.12) !important;
+
+            box-shadow:0 10px 28px rgba(20,60,100,.07) !important;
+
+        }
+
+        html[data-tema="claro"] .toolbar{
+
+            border-bottom-color:rgba(20,60,100,.12) !important;
+
+        }
+
+        html[data-tema="claro"] .toolbar label{ color:#6d89a6 !important; }
+
+        html[data-tema="claro"] .toolbar label:focus-within{ color:#1b5fd9 !important; }
+
+        html[data-tema="claro"] .toolbar select,
+        html[data-tema="claro"] .toolbar input{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.22) !important;
+
+            color:#0b2036 !important;
+
+            color-scheme: light !important;
+
+        }
+
+        /* o filtro tem seis opções: sem isto a lista abre
+           branca no branco no Windows */
+        html[data-tema="claro"] .toolbar select option{
+
+            background:#ffffff !important;
+
+            color:#0b2036 !important;
+
+        }
+
+        html[data-tema="claro"] .toolbar input::placeholder{ color:#8ba1b8 !important; }
+
+        html[data-tema="claro"] .toolbar select:hover,
+        html[data-tema="claro"] .toolbar input:hover{
+
+            border-color:#1257c7 !important;
+
+        }
+
+        html[data-tema="claro"] .toolbar select:focus,
+        html[data-tema="claro"] .toolbar input:focus{
+
+            background:#ffffff !important;
+
+            border-color:#1b5fd9 !important;
+
+            box-shadow:0 0 0 3px rgba(27,95,217,.14) !important;
+
+            outline:none !important;
+
+        }
+
+        html[data-tema="claro"] input[type="search"]::-webkit-search-cancel-button{
+
+            filter:none !important;
+
+        }
+
+
+        /* ---------- tabela ---------- */
+
+        html[data-tema="claro"] th{
+
+            border-bottom-color:rgba(20,60,100,.18) !important;
+
+            background:#f1f6fc !important;
+
+            color:#6d89a6 !important;
+
+        }
+
+        html[data-tema="claro"] td{
+
+            border-bottom-color:rgba(20,60,100,.1) !important;
+
+            color:#132c46 !important;
+
+        }
+
+        html[data-tema="claro"] tbody tr:hover{
+
+            background:rgba(27,95,217,.055) !important;
+
+        }
+
+        html[data-tema="claro"] td strong,
+        html[data-tema="claro"] td b{ color:#0b2036 !important; }
+
+        /* o modelo e a placa, embaixo do nome */
+        html[data-tema="claro"] td small{ color:#7b95ae !important; }
+
+        html[data-tema="claro"] .vazio{ color:#6d89a6 !important; }
+
+
+        /* ---------- etiquetas de status ----------
+           O seu JS tira o acento e deixa minúsculo, então
+           vem "tolerancia" e "concluida" sem acento.
+        */
+
+        html[data-tema="claro"] .status{
+
+            border-color:rgba(20,60,100,.3) !important;
+
+            background:rgba(20,60,100,.07) !important;
+
+            color:#46627f !important;
+
+        }
+
+        html[data-tema="claro"] .status.reservada{
+
+            border-color:rgba(27,95,217,.3) !important;
+
+            background:rgba(27,95,217,.1) !important;
+
+            color:#164da8 !important;
+
+        }
+
+        html[data-tema="claro"] .status.tolerancia{
+
+            border-color:rgba(168,106,6,.3) !important;
+
+            background:rgba(168,106,6,.1) !important;
+
+            color:#8a5605 !important;
+
+        }
+
+        html[data-tema="claro"] .status.atraso{
+
+            border-color:rgba(198,47,47,.3) !important;
+
+            background:rgba(198,47,47,.1) !important;
+
+            color:#a82222 !important;
+
+        }
+
+        html[data-tema="claro"] .status.ativa{
+
+            border-color:rgba(15,157,99,.32) !important;
+
+            background:rgba(15,157,99,.1) !important;
+
+            color:#0a7a4c !important;
+
+        }
+
+        html[data-tema="claro"] .status.concluida{
+
+            border-color:rgba(20,60,100,.24) !important;
+
+            background:rgba(20,60,100,.08) !important;
+
+            color:#46627f !important;
+
+        }
+
+        html[data-tema="claro"] .status.cancelada{
+
+            border-color:rgba(198,47,47,.3) !important;
+
+            background:rgba(198,47,47,.1) !important;
+
+            color:#a82222 !important;
+
+        }
+
+
+        /* ---------- botões de ação da linha ----------
+           Ficam vazados em repouso e preenchem no hover.
+           Como são três cores na mesma célula, o repouso
+           discreto evita que a tabela vire um carnaval.
+        */
+
+        html[data-tema="claro"] .acoes .btn{
+
+            background:#ffffff !important;
+
+            border-color:rgba(20,60,100,.2) !important;
+
+            color:#46627f !important;
+
+        }
+
+        html[data-tema="claro"] .acoes .btn-verde{
+
+            background:rgba(15,157,99,.07) !important;
+
+            border-color:rgba(15,157,99,.38) !important;
+
+            color:#0a7a4c !important;
+
+        }
+
+        html[data-tema="claro"] .acoes .btn-verde:hover{
+
+            background:#0f9d63 !important;
+
+            border-color:#0f9d63 !important;
+
+            color:#ffffff !important;
+
+        }
+
+        html[data-tema="claro"] .acoes .btn-azul{
+
+            background:rgba(27,95,217,.07) !important;
+
+            border-color:rgba(27,95,217,.38) !important;
+
+            color:#164da8 !important;
+
+        }
+
+        html[data-tema="claro"] .acoes .btn-azul:hover{
+
+            background:#1b5fd9 !important;
+
+            border-color:#1b5fd9 !important;
+
+            color:#ffffff !important;
+
+        }
+
+        html[data-tema="claro"] .acoes .btn-vermelho{
+
+            background:rgba(198,47,47,.06) !important;
+
+            border-color:rgba(198,47,47,.34) !important;
+
+            color:#a82222 !important;
+
+        }
+
+        html[data-tema="claro"] .acoes .btn-vermelho:hover{
+
+            background:#c62f2f !important;
+
+            border-color:#c62f2f !important;
+
+            color:#ffffff !important;
+
+        }
+
+        html[data-tema="claro"] .acoes .btn:focus-visible{
+
+            outline:2px solid #1b5fd9 !important;
+
+            outline-offset:2px;
+
+        }
+
+
+        /* ---------- etiqueta de espera ----------
+           "Aguardando cliente" / "Aguardando saída"
+        */
+
+        html[data-tema="claro"] .espera-chip{
+
+            background:rgba(168,106,6,.1) !important;
+
+            border-color:rgba(168,106,6,.3) !important;
+
+            color:#8a5605 !important;
+
+        }
+
+
+        /* ---------- celular ---------- */
+
+        @media (max-width:900px){
+
+            html[data-tema="claro"] .sidebar{ background:#ffffff !important; }
+
+            html[data-tema="claro"] .sidebar.open{
+
+                box-shadow:14px 0 40px rgba(20,60,100,.2) !important;
+
+            }
+
+        }
+
+
+        /* ---------- o botão do tema ----------
+           z-index baixo para ficar atrás dos modais de
+           presença, que abrem por cima de tudo.
+        */
+
+        .tema-botao{
+
+            position:fixed;
+
+            right:18px;
+
+            bottom:18px;
+
+            z-index:50;
+
+            width:44px;
+
+            height:44px;
+
+            display:grid;
+
+            place-items:center;
+
+            border:1px solid rgba(120,170,220,.34);
+
+            border-radius:10px;
+
+            background:#0a1d33;
+
+            color:#8cc2ff;
+
+            cursor:pointer;
+
+            box-shadow:0 10px 26px rgba(0,0,0,.4);
+
+            transition:border-color .18s, background .18s, color .18s, transform .18s;
+
+        }
+
+        .tema-botao:hover{
+
+            border-color:#2f7dff;
+
+            background:#2f7dff;
+
+            color:#ffffff;
+
+            transform:translateY(-2px);
+
+        }
+
+        .tema-botao svg{ width:19px; height:19px; stroke-width:1.8; }
+
+        html[data-tema="claro"] .tema-botao{
+
+            border-color:rgba(20,60,100,.22);
+
+            background:#ffffff;
+
+            color:#1b5fd9;
+
+            box-shadow:0 10px 26px rgba(20,60,100,.16);
+
+        }
+
+        html[data-tema="claro"] .tema-botao:hover{
+
+            border-color:#1b5fd9;
+
+            background:#1b5fd9;
+
+            color:#ffffff;
+
+        }
+
+        @media (max-width:520px){
+
+            .tema-botao{ right:14px; bottom:14px; width:40px; height:40px; }
+
+        }
+
+        `;
+
+
+        /* =================================================
+           INJETA O CSS
+        ================================================= */
+
+        const folha = document.createElement("style");
+
+        folha.id = "tema-claro-estilo";
+
+        folha.textContent = estilo;
+
+        document.head.appendChild(folha);
+
+
+        /* =================================================
+           APLICA O QUE ESTAVA SALVO
+        ================================================= */
+
+        if(localStorage.getItem(CHAVE) === "claro"){
+
+            document.documentElement.setAttribute("data-tema", "claro");
+
+        }
+
+
+        /* =================================================
+           DESENHOS DO BOTÃO
+        ================================================= */
+
+        const sol = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4.2"/>
+                <path d="M12 2.5v2.2M12 19.3v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6
+                         M2.5 12h2.2M19.3 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+            </svg>`;
+
+
+        const lua = `
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>
+            </svg>`;
+
+
+        /* =================================================
+           BOTÃO
+        ================================================= */
+
+        function criarBotao(){
+
+            if(document.querySelector(".tema-botao")) return;
+
+
+            const botao = document.createElement("button");
+
+            botao.className = "tema-botao";
+
+            botao.type = "button";
+
+            document.body.appendChild(botao);
+
+
+            function pintar(){
+
+                const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+                botao.innerHTML = claro ? lua : sol;
+
+                botao.title = claro ? "Mudar para o modo escuro" : "Mudar para o modo claro";
+
+                botao.setAttribute("aria-label", botao.title);
+
+                botao.setAttribute("aria-pressed", claro ? "true" : "false");
+
+            }
+
+
+            botao.addEventListener("click", () => {
+
+                const claro = document.documentElement.getAttribute("data-tema") === "claro";
+
+
+                if(claro){
+
+                    document.documentElement.removeAttribute("data-tema");
+
+                    localStorage.setItem(CHAVE, "escuro");
+
+                } else {
+
+                    document.documentElement.setAttribute("data-tema", "claro");
+
+                    localStorage.setItem(CHAVE, "claro");
+
+                }
+
+
+                pintar();
+
+            });
+
+
+            pintar();
+
+        }
+
+
+        if(document.readyState === "loading"){
+
+            document.addEventListener("DOMContentLoaded", criarBotao);
+
+        } else {
+
+            criarBotao();
+
+        }
+
+
+        /* =================================================
+           ATALHO DE TECLADO: Shift + T
+           Não dispara enquanto você digita na busca.
+        ================================================= */
+
+        document.addEventListener("keydown", (evento) => {
+
+            if(evento.shiftKey && (evento.key === "T" || evento.key === "t")){
+
+                const alvo = evento.target;
+
+                if(alvo && ["INPUT", "TEXTAREA", "SELECT"].includes(alvo.tagName)) return;
+
+                const botao = document.querySelector(".tema-botao");
+
+                if(botao) botao.click();
+
+            }
+
+        });
+
+    })();
+  
   </script>
 </body>
 
