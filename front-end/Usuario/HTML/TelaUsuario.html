@@ -20,18 +20,17 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     <header class="navbar">
 
         <div class="logo">
-            <a href="TelaUsuario.html" class="logo"></a>
-            <i class="fa-solid fa-layer-group"></i>
-            <span>Vaga</span>Connect
+            <a href="TelaUsuario.html" class="logo">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Vaga</span>Connect
             </a>
         </div>
 
         <nav>
 
-
             <a href="../HTML/TelaConta.html">
                 <i class="fa-regular fa-user"></i>
-                Conta
+                Minha Conta
             </a>
 
             <a href="#" id="btnSair">
@@ -52,13 +51,27 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
             <h1 id="saudacao">Olá, Usuário </h1>
 
             <p>
-                Gerencie reservas, pagamentos e veículos em um único painel moderno,
-                rápido e inteligente.
+                Reserve uma vaga de estacionamento em 3 passos simples.
+                Se ainda não fez nada por aqui, comece pelo passo 1 logo abaixo.
             </p>
 
-            <a href="../HTML/TelaConta.html">
-            <button>Perfil Usuário</button>
-            </a>
+            <div class="hero-actions">
+
+                <a href="../HTML/TelaReservas.html">
+                    <button class="primary">
+                        <i class="fa-solid fa-calendar-plus"></i>
+                        Reservar uma vaga
+                    </button>
+                </a>
+
+                <a href="../HTML/TelaConta.html">
+                    <button>
+                        <i class="fa-regular fa-user"></i>
+                        Ver meu perfil
+                    </button>
+                </a>
+
+            </div>
 
         </div>
 
@@ -70,69 +83,35 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
     </section>
 
-    <!-- Título -->
+    <!-- Dica -->
+
+    <div class="dica">
+
+        <i class="fa-solid fa-circle-info"></i>
+
+        <p>
+            <strong>Primeira vez aqui?</strong>
+            Siga os cartões na ordem: <strong>1</strong> cadastre seu veículo,
+            <strong>2</strong> reserve a vaga e <strong>3</strong> acompanhe a reserva.
+            Clique em qualquer cartão para abrir.
+        </p>
+
+    </div>
+
+    <!-- Passo a passo -->
 
     <div class="title-section">
 
         <div class="line"></div>
 
         <div>
-            <h2>Painel de Controle</h2>
-            <p>Acesse rapidamente todas as funcionalidades do sistema.</p>
+            <h2>Passo a passo</h2>
+            <p>Siga na ordem para reservar sua vaga</p>
         </div>
 
     </div>
 
-    <!-- Cards -->
-
-    <section class="cards">
-      
-
-        <div class="card"> 
-
-            <div class="icon blue">
-                <i class="fa-solid fa-calendar-days"></i>
-            </div>
-
-            <span class="badge green">Ativo</span>
-
-            <h3>Reservas</h3>
-
-            <p>
-                Faça sua reserva aqui.
-            </p>
-
-          <a href="../HTML/TelaReservas.html"> 
-            <button>
-                <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          </a>  
-
-        </div>
-
-        <div class="card">
-
-            <div class="icon green">
-                <i class="fa-regular fa-credit-card"></i>
-            </div>
-
-            <span class="badge green">Seguro</span>
-
-            <h3>Minhas Reservas</h3>
-
-            <p>
-                Veja as suas reservas atual.
-            </p>
-
-            <a href="../HTML/TelaReserAndamento.html">
-            <button>
-                <i class="fa-solid fa-arrow-right"></i>
-            </button>
-            </a>
-
-        </div>
-
-       
+    <section class="cards passos">
 
         <div class="card">
 
@@ -140,41 +119,106 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
                 <i class="fa-solid fa-car"></i>
             </div>
 
-            <span class="badge blue">Veículos</span>
+            <span class="badge blue">Passo 1</span>
 
-            <h3>Meus Veículos</h3>
+            <h3>Cadastrar meu veículo</h3>
 
             <p>
-                Cadastre e gerencie seus veículos facilmente.
+                Informe o carro ou a moto que vai usar. Só precisa fazer uma vez.
             </p>
-            
-          <a href="../HTML/TelaVeiculos.html">  
+
+          <a href="../HTML/TelaVeiculos.html" aria-label="Passo 1: cadastrar meu veículo">
             <button>
+                <span>Cadastrar</span>
                 <i class="fa-solid fa-arrow-right"></i>
             </button>
-          </a>  
+          </a>
 
         </div>
 
-                <div class="card"> 
+        <div class="card">
+
+            <div class="icon blue">
+                <i class="fa-solid fa-calendar-days"></i>
+            </div>
+
+            <span class="badge green">Passo 2</span>
+
+            <h3>Reservar uma vaga</h3>
+
+            <p>
+                Escolha o estacionamento, o horário e confirme sua reserva.
+            </p>
+
+          <a href="../HTML/TelaReservas.html" aria-label="Passo 2: reservar uma vaga">
+            <button>
+                <span>Reservar</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </a>
+
+        </div>
+
+        <div class="card">
+
+            <div class="icon green">
+                <i class="fa-solid fa-clock"></i>
+            </div>
+
+            <span class="badge green">Passo 3</span>
+
+            <h3>Acompanhar minha reserva</h3>
+
+            <p>
+                Veja o andamento da reserva atual e quanto tempo falta.
+            </p>
+
+            <a href="../HTML/TelaReserAndamento.html" aria-label="Passo 3: acompanhar minha reserva">
+            <button>
+                <span>Acompanhar</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            </a>
+
+        </div>
+
+    </section>
+
+    <!-- Depois da reserva -->
+
+    <div class="title-section depois">
+
+        <div class="line"></div>
+
+        <div>
+            <h2>Depois da reserva</h2>
+            <p>Use quando precisar</p>
+        </div>
+
+    </div>
+
+    <section class="cards extras">
+
+        <div class="card">
 
             <div class="icon blue">
                 <i class="fa-solid fa-rotate-left"></i>
             </div>
 
-            <span class="badge green">Status</span>
+            <span class="badge green">Se cancelar</span>
 
-            <h3>Reembolsos</h3>
+            <h3>Ver meus reembolsos</h3>
 
             <p>
-                Vizualize o reembolso dos minutos que você não utilizou na reserva cancelada.
+                Cancelou uma reserva? Veja o valor devolvido pelos minutos que você não usou.
             </p>
 
-          <a href="../HTML/TelaReembolso.html"> 
+          <a href="../HTML/TelaReembolso.html" aria-label="Ver meus reembolsos">
             <button>
+                <span>Ver valores</span>
                 <i class="fa-solid fa-arrow-right"></i>
             </button>
-          </a>  
+          </a>
 
         </div>
 
@@ -184,29 +228,28 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
                 <i class="fa-solid fa-star"></i>
             </div>
 
-            <span class="badge orange">Avaliações</span>
+            <span class="badge orange">Opcional</span>
 
-            <h3>Feedbacks</h3>
+            <h3>Dar minha avaliação</h3>
 
             <p>
-                Avalie e veja o feedback de outros usuários.
+                Conte como foi sua experiência e leia a opinião de outros usuários.
             </p>
 
-          <a href="../HTML/TelaFeedbacks.html"> 
+          <a href="../HTML/TelaFeedbacks.html" aria-label="Dar minha avaliação">
             <button>
+                <span>Avaliar</span>
                 <i class="fa-solid fa-arrow-right"></i>
             </button>
-          </a>  
+          </a>
 
         </div>
-
-        
 
     </section>
 
     <script src="../../Base/JS/sessao.js"></script>
     <script>
-        
+
 // ===============================
 // SAIR DA CONTA
 // ===============================
@@ -406,11 +449,7 @@ if (!usuarioLogado) {
 
 })();
 
-
-
     </script>
-
-
 
 </div>
 </body>

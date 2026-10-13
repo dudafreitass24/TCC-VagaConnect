@@ -32,9 +32,9 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
 
 
         <div class="logo">
-            <a href="TelaUsuario.html" class="logo"></a>
-            <i class="fa-solid fa-layer-group"></i>
-            <span>Vaga</span>Connect
+            <a href="TelaUsuario.html" class="logo">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Vaga</span>Connect
             </a>
         </div>
 
@@ -57,7 +57,7 @@ Início
 
 <i class="fa-regular fa-user"></i>
 
-Conta
+Minha Conta
 
 </a>
 
@@ -89,13 +89,13 @@ Sair
 
 
 
-<!-- TOPO -->
+<!-- TOPO + PASSOS -->
 
 
 <header class="topbar">
 
 
-<button id="backButton">
+<button id="backButton" type="button" aria-label="Voltar para o início" title="Voltar para o início">
 
 ←
 
@@ -103,7 +103,7 @@ Sair
 
 
 
-<div>
+<div class="topbar-titulo">
 
 
 <h1 id="nomeEstacionamento">
@@ -124,6 +124,18 @@ Selecione um estacionamento na lista ao lado.
 </div>
 
 
+
+<ol class="passos" aria-label="Passos para reservar">
+
+<li class="p1"><b class="num">1</b> Estacionamento</li>
+
+<li class="p2"><b class="num">2</b> Vaga</li>
+
+<li class="p3"><b class="num">3</b> Confirmar</li>
+
+</ol>
+
+
 </header>
 
 
@@ -133,14 +145,22 @@ Selecione um estacionamento na lista ao lado.
 <!-- ================= LEGENDA ================= -->
 
 
-<section class="legend">
+<section class="legend" aria-label="Legenda do mapa">
+
+
+<p class="legend-titulo">
+
+Cores do mapa:
+
+</p>
+
 
 
 <div>
 
 <span class="green"></span>
 
-Livre
+Livre · pode escolher
 
 </div>
 
@@ -170,17 +190,7 @@ Ocupada
 
 <span class="blue"></span>
 
-Selecionada
-
-</div>
-
-
-
-<div>
-
-<span class="gray"></span>
-
-Coberta
+Sua escolha
 
 </div>
 
@@ -210,7 +220,9 @@ Coberta
 
 <h3>
 
-Estacionamentos
+<span class="n">1</span>
+
+Escolha o estacionamento
 
 </h3>
 
@@ -225,7 +237,7 @@ Estacionamentos
 <input
 type="text"
 id="buscarEstacionamento"
-placeholder="Pesquisar estacionamento..."
+placeholder="Pesquisar pelo nome ou endereço..."
 >
 
 
@@ -242,16 +254,90 @@ placeholder="Pesquisar estacionamento..."
 </div>
 
 
-<hr>
 
+
+
+<div class="resume">
 
 
 <h3>
 
-Filtros
+Vagas neste local
 
 </h3>
 
+
+
+<p>
+
+Livres
+
+<strong id="livres">
+
+0
+
+</strong>
+
+</p>
+
+
+
+<p>
+
+Reservadas
+
+<strong id="reservadas">
+
+0
+
+</strong>
+
+</p>
+
+
+
+<p>
+
+Ocupadas
+
+<strong id="ocupadas">
+
+0
+
+</strong>
+
+</p>
+
+
+
+<p>
+
+Total
+
+<strong id="total">
+
+0
+
+</strong>
+
+</p>
+
+
+
+</div>
+
+
+
+
+
+<details class="filtros-extra">
+
+
+<summary>
+
+Filtros
+
+</summary>
 
 
 
@@ -350,78 +436,7 @@ Carregador EV
 </select>
 
 
-
-
-
-
-<div class="resume">
-
-
-<h3>
-
-Resumo
-
-</h3>
-
-
-
-<p>
-
-Livres
-
-<strong id="livres">
-
-0
-
-</strong>
-
-</p>
-
-
-
-<p>
-
-Reservadas
-
-<strong id="reservadas">
-
-0
-
-</strong>
-
-</p>
-
-
-
-<p>
-
-Ocupadas
-
-<strong id="ocupadas">
-
-0
-
-</strong>
-
-</p>
-
-
-
-<p>
-
-Total
-
-<strong id="total">
-
-0
-
-</strong>
-
-</p>
-
-
-
-</div>
+</details>
 
 
 
@@ -437,6 +452,16 @@ Total
 
 
 <section class="parking-area">
+
+
+
+<p class="mapa-titulo">
+
+<span class="n">2</span>
+
+Clique em uma vaga <strong>verde</strong> para escolher
+
+</p>
 
 
 
@@ -490,9 +515,21 @@ ENTRADA / SAÍDA
 
 <h2>
 
-Vaga Selecionada
+<span class="n">3</span>
+
+Confirme sua vaga
 
 </h2>
+
+
+
+<p class="dica-vaga">
+
+<i class="fa-solid fa-hand-pointer"></i>
+
+<span>Você ainda não escolheu. Depois de marcar uma vaga no mapa, os dados dela aparecem aqui.</span>
+
+</p>
 
 
 
@@ -503,7 +540,7 @@ Vaga Selecionada
 
 <span>
 
-Número
+Número da vaga
 
 </span>
 
@@ -593,72 +630,18 @@ Valor / hora
 <button id="selectSpot">
 
 
-Selecionar vaga
+Confirmar vaga e continuar
 
 
 </button>
 
 
 
+<p class="passo-final">
 
-
-
-
-<div class="icons">
-
-
-<h3>
-
-Legenda
-
-</h3>
-
-
-
-<p>
-
-🟩 Livre
+Em seguida você vai para a tela de detalhes da reserva.
 
 </p>
-
-
-<p>
-
-🟥 Ocupada
-
-</p>
-
-
-<p>
-
-🟨 Reservada
-
-</p>
-
-
-<p>
-
-🟦 Selecionada
-
-</p>
-
-
-<p>
-
-⬜ Coberta
-
-</p>
-
-
-<p>
-
-🟪 Deficiente
-
-</p>
-
-
-
-</div>
 
 
 

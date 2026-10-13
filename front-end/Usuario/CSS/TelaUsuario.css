@@ -4,7 +4,6 @@
    fundo escuro com malha técnica, cantos retos,
    linhas de 1px no lugar de sombras e rótulos
    em monoespaçada.
-   Mesmas classes do HTML atual.
 ===================================================== */
 
 
@@ -103,6 +102,15 @@ body::before{
 ::selection{
 
     background:rgba(47, 125, 255, .35);
+
+}
+
+
+a{
+
+    color:inherit;
+
+    text-decoration:none;
 
 }
 
@@ -242,6 +250,13 @@ nav a{
 }
 
 
+nav a i{
+
+    margin-right:6px;
+
+}
+
+
 nav a::after{
 
     content:"";
@@ -298,7 +313,7 @@ nav a:hover::after{
 
     gap:28px;
 
-    margin-bottom:34px;
+    margin-bottom:26px;
 
     padding:0 0 28px;
 
@@ -345,6 +360,20 @@ nav a:hover::after{
 }
 
 
+/* grupo de botões do topo */
+.hero-actions{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:12px;
+
+    margin-top:18px;
+
+}
+
+
 .hero button{
 
     position:relative;
@@ -376,6 +405,20 @@ nav a:hover::after{
     cursor:pointer;
 
     transition:color .22s;
+
+}
+
+
+.hero-actions button{
+
+    margin-top:0;
+
+}
+
+
+.hero button i{
+
+    margin-right:8px;
 
 }
 
@@ -419,6 +462,34 @@ nav a:hover::after{
 }
 
 
+/* botão principal: já vem preenchido, é a ação mais importante */
+.hero button.primary{
+
+    background:var(--azul);
+
+    color:#ffffff;
+
+    transition:background .22s;
+
+}
+
+
+.hero button.primary::before{
+
+    display:none;
+
+}
+
+
+.hero button.primary:hover{
+
+    background:var(--azul-claro);
+
+    color:#ffffff;
+
+}
+
+
 .avatar-box{
 
     width:110px;
@@ -455,6 +526,63 @@ nav a:hover::after{
 
 
 /* =====================================================
+   DICA · faixa de orientação
+===================================================== */
+
+.dica{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:12px;
+
+    margin-bottom:30px;
+
+    padding:13px 16px;
+
+    border:1px solid var(--risco);
+
+    border-left:2px solid var(--azul-claro);
+
+    background:var(--superficie);
+
+}
+
+
+.dica i{
+
+    margin-top:2px;
+
+    color:var(--azul-claro);
+
+    font-size:14px;
+
+}
+
+
+.dica p{
+
+    color:var(--apagado);
+
+    font-size:12px;
+
+    line-height:1.7;
+
+}
+
+
+.dica strong{
+
+    color:var(--texto);
+
+    font-weight:600;
+
+}
+
+
+
+/* =====================================================
    TÍTULO DE SEÇÃO
 ===================================================== */
 
@@ -467,6 +595,13 @@ nav a:hover::after{
     gap:14px;
 
     margin-bottom:18px;
+
+}
+
+
+.title-section.depois{
+
+    margin-top:38px;
 
 }
 
@@ -534,6 +669,22 @@ nav a:hover::after{
 }
 
 
+/* passo a passo: 3 colunas, na ordem de uso */
+.cards.passos{
+
+    grid-template-columns:repeat(3, 1fr);
+
+}
+
+
+/* depois da reserva: 2 colunas */
+.cards.extras{
+
+    grid-template-columns:repeat(2, 1fr);
+
+}
+
+
 .card{
 
     position:relative;
@@ -588,6 +739,48 @@ nav a:hover::after{
 .card:hover::before{
 
     transform:scaleX(1);
+
+}
+
+
+/* o cartão inteiro vira clicável, não só o botão */
+.card > a::after{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:1;
+
+}
+
+
+/* setinha entre os passos: mostra a ordem 1 → 2 → 3 */
+.cards.passos .card:not(:last-child)::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:50%;
+
+    right:-7px;
+
+    z-index:2;
+
+    width:12px;
+
+    height:12px;
+
+    border-top:1px solid var(--risco-forte);
+
+    border-right:1px solid var(--risco-forte);
+
+    background:var(--superficie);
+
+    transform:translateY(-50%) rotate(45deg);
 
 }
 
@@ -778,7 +971,7 @@ nav a:hover::after{
 
 .card p{
 
-    margin-bottom:44px;
+    margin-bottom:58px;
 
     color:var(--apagado);
 
@@ -791,7 +984,7 @@ nav a:hover::after{
 
 
 /* =====================================================
-   BOTÃO DO CARD
+   BOTÃO DO CARD · agora com palavra de ação
 ===================================================== */
 
 .card button{
@@ -802,13 +995,15 @@ nav a:hover::after{
 
     bottom:18px;
 
-    width:38px;
-
     height:38px;
 
-    display:grid;
+    display:flex;
 
-    place-items:center;
+    align-items:center;
+
+    gap:9px;
+
+    padding:0 14px;
 
     border:1px solid var(--azul);
 
@@ -818,7 +1013,15 @@ nav a:hover::after{
 
     color:var(--azul-claro);
 
-    font-size:14px;
+    font-family:var(--mono);
+
+    font-size:10.5px;
+
+    font-weight:600;
+
+    letter-spacing:.14em;
+
+    text-transform:uppercase;
 
     cursor:pointer;
 
@@ -827,13 +1030,30 @@ nav a:hover::after{
 }
 
 
-.card button:hover{
+.card button i{
+
+    font-size:12px;
+
+    transition:transform .22s ease;
+
+}
+
+
+.card button:hover,
+.card:hover button{
 
     background:var(--azul);
 
     color:#ffffff;
 
     transform:none;
+
+}
+
+
+.card:hover button i{
+
+    transform:translateX(3px);
 
 }
 
@@ -901,12 +1121,35 @@ nav a:hover::after{
 
     }
 
+    /* passos empilhados: a setinha aponta para baixo */
+    .cards.passos{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .cards.passos .card:not(:last-child)::after{
+
+        top:auto;
+
+        right:auto;
+
+        bottom:-7px;
+
+        left:50%;
+
+        transform:translateX(-50%) rotate(135deg);
+
+    }
+
 }
 
 
 @media (max-width:560px){
 
-    .cards{
+    .cards,
+    .cards.passos,
+    .cards.extras{
 
         grid-template-columns:1fr;
 
@@ -920,6 +1163,24 @@ nav a:hover::after{
 
     }
 
+    .hero-actions{
+
+        width:100%;
+
+    }
+
+    .hero-actions a{
+
+        flex:1 1 100%;
+
+    }
+
+    .hero-actions button{
+
+        width:100%;
+
+    }
+
 }
 
 
@@ -928,7 +1189,7 @@ nav a:hover::after{
 
     .navbar{ padding:12px 0 10px; margin-bottom:20px; }
 
-    .hero{ margin-bottom:24px; padding-bottom:20px; }
+    .hero{ margin-bottom:20px; padding-bottom:20px; }
 
     .hero h1{ font-size:28px; }
 
@@ -940,7 +1201,7 @@ nav a:hover::after{
 
     .icon{ margin-bottom:14px; }
 
-    .card p{ margin-bottom:38px; }
+    .card p{ margin-bottom:52px; }
 
 }
 
@@ -977,7 +1238,8 @@ nav a:hover::after{
     .badge,
     .avatar-box,
     .card button,
-    .hero button{
+    .hero button,
+    .dica{
 
         border:1px solid CanvasText;
 
@@ -985,336 +1247,12 @@ nav a:hover::after{
 
 }
 
-/* =====================================================
-   VagaConnect · Modo claro
-
-   O escuro continua sendo o padrão. Este arquivo só
-   redefine os tokens quando a página está marcada com
-   data-tema="claro" no <html>.
-
-   COMO USAR
-   Inclua DEPOIS do CSS da tela:
-
-     <link rel="stylesheet" href="../CSS/TelaX.css">
-     <link rel="stylesheet" href="../../Base/CSS/tema.css">
-     <script src="../../Base/JS/tema.js"></script>
-===================================================== */
 
 
 /* =====================================================
-   TOKENS DO MODO CLARO
-===================================================== */
-
-html[data-tema="claro"]{
-
-    --tinta:       #eef3f9;
-    --superficie:  #ffffff;
-    --elevado:     #f3f7fc;
-
-    --risco:       rgba(20, 60, 100, .14);
-    --risco-forte: rgba(20, 60, 100, .3);
-
-    --texto:       #0b2036;
-    --apagado:     #46627f;
-    --fraco:       #64809c;
-
-    --azul:        #1b5fd9;
-    --azul-claro:  #1257c7;
-
-    --verde:       #0f9d63;
-    --verde-forte: #0b8552;
-
-    --ambar:       #a86a06;
-    --vermelho:    #c62f2f;
-    --roxo:        #6d4bd8;
-
-    /* nomes antigos que algumas telas ainda usam */
-    --fundo:       #eef3f9;
-    --painel:      #ffffff;
-    --cartao:      #f3f7fc;
-    --campo:       #ffffff;
-    --linha:       rgba(20, 60, 100, .14);
-    --linha-forte: rgba(20, 60, 100, .3);
-    --bg:          #eef3f9;
-    --card:        #ffffff;
-    --border:      rgba(20, 60, 100, .14);
-    --muted:       #64809c;
-    --text:        #0b2036;
-    --ink:         #0b2036;
-    --line:        rgba(20, 60, 100, .14);
-    --blue:        #1b5fd9;
-    --surface:     #ffffff;
-    --surface-2:   #f3f7fc;
-
-}
-
-
-
-/* =====================================================
-   FUNDO DA PÁGINA
-   A malha técnica fica mais discreta no claro.
-===================================================== */
-
-html[data-tema="claro"] body{
-
-    background:
-        repeating-linear-gradient(0deg,   rgba(20, 60, 100, .05) 0 1px, transparent 1px 68px),
-        repeating-linear-gradient(90deg,  rgba(20, 60, 100, .05) 0 1px, transparent 1px 68px),
-        linear-gradient(180deg, #f7fafd 0%, var(--tinta) 55%);
-
-    color:var(--texto);
-
-}
-
-
-/* telas do usuário, que usam brilhos radiais */
-html[data-tema="claro"] body:has(.app),
-html[data-tema="claro"] body:has(.screen),
-html[data-tema="claro"] body:has(.container){
-
-    background:
-        radial-gradient(760px 420px at 12% -12%, rgba(27, 95, 217, .10), transparent 62%),
-        radial-gradient(620px 360px at 100% 0%, rgba(27, 95, 217, .06), transparent 58%),
-        var(--tinta);
-
-}
-
-
-
-/* =====================================================
-   SUPERFÍCIES
-   Sombra suave no lugar do contraste do escuro.
-===================================================== */
-
-html[data-tema="claro"] .sidebar,
-html[data-tema="claro"] .rail,
-html[data-tema="claro"] .panel,
-html[data-tema="claro"] .card,
-html[data-tema="claro"] .box,
-html[data-tema="claro"] .form-panel,
-html[data-tema="claro"] .config-panel,
-html[data-tema="claro"] .payment-card,
-html[data-tema="claro"] .success-card,
-html[data-tema="claro"] .feedback-box,
-html[data-tema="claro"] .modal,
-html[data-tema="claro"] .reservation-card{
-
-    background:var(--superficie);
-
-    box-shadow:0 8px 26px rgba(20, 60, 100, .08);
-
-}
-
-
-html[data-tema="claro"] .sidebar{
-
-    background:#ffffff;
-
-}
-
-
-html[data-tema="claro"] .cards,
-html[data-tema="claro"] .stats-grid,
-html[data-tema="claro"] .info,
-html[data-tema="claro"] .resumo,
-html[data-tema="claro"] .pedido-valores,
-html[data-tema="claro"] .modal-valores{
-
-    background:var(--risco);
-
-}
-
-
-html[data-tema="claro"] .cards .card,
-html[data-tema="claro"] .stat-card,
-html[data-tema="claro"] .info div,
-html[data-tema="claro"] .resumo div,
-html[data-tema="claro"] .pedido-valores div,
-html[data-tema="claro"] .modal-valores div{
-
-    background:var(--superficie);
-
-    box-shadow:none;
-
-}
-
-
-html[data-tema="claro"] .cards .card:hover,
-html[data-tema="claro"] .stat-card:hover{
-
-    background:var(--elevado);
-
-}
-
-
-html[data-tema="claro"] .time-card,
-html[data-tema="claro"] .price-card,
-html[data-tema="claro"] .timer-box,
-html[data-tema="claro"] .calculo,
-html[data-tema="claro"] .conta-topo,
-html[data-tema="claro"] .welcome-card,
-html[data-tema="claro"] .code-box,
-html[data-tema="claro"] .details{
-
-    background:var(--elevado);
-
-}
-
-
-
-/* =====================================================
-   CAMPOS
-===================================================== */
-
-html[data-tema="claro"] input,
-html[data-tema="claro"] select,
-html[data-tema="claro"] textarea,
-html[data-tema="claro"] .search-box,
-html[data-tema="claro"] .busca-estacionamento,
-html[data-tema="claro"] .senha-box input,
-html[data-tema="claro"] .metodo{
-
-    background:#ffffff;
-
-    color:var(--texto);
-
-    border-color:var(--risco-forte);
-
-}
-
-
-html[data-tema="claro"] input::placeholder,
-html[data-tema="claro"] textarea::placeholder{
-
-    color:#8ba1b8;
-
-}
-
-
-html[data-tema="claro"] input:focus,
-html[data-tema="claro"] select:focus,
-html[data-tema="claro"] textarea:focus,
-html[data-tema="claro"] .search-box:focus-within{
-
-    background:#ffffff;
-
-    border-color:var(--azul);
-
-}
-
-
-html[data-tema="claro"] select option{
-
-    background:#ffffff;
-
-}
-
-
-html[data-tema="claro"] input,
-html[data-tema="claro"] select,
-html[data-tema="claro"] textarea{
-
-    color-scheme:light;
-
-}
-
-
-
-/* =====================================================
-   TABELAS E LINHAS
-===================================================== */
-
-html[data-tema="claro"] td{
-
-    color:#1d3a56;
-
-}
-
-
-html[data-tema="claro"] tbody tr:hover{
-
-    background:rgba(27, 95, 217, .05);
-
-}
-
-
-html[data-tema="claro"] .sidebar nav a:hover,
-html[data-tema="claro"] .menu-item:hover,
-html[data-tema="claro"] .menu-link:hover{
-
-    background:rgba(27, 95, 217, .08);
-
-    color:var(--azul);
-
-}
-
-
-html[data-tema="claro"] .sidebar nav .active,
-html[data-tema="claro"] .menu-item.active,
-html[data-tema="claro"] .menu-link.active{
-
-    background:rgba(27, 95, 217, .12);
-
-    color:var(--azul);
-
-}
-
-
-html[data-tema="claro"] .avatar,
-html[data-tema="claro"] .user-avatar,
-html[data-tema="claro"] .avatar-grande,
-html[data-tema="claro"] .brand-mark,
-html[data-tema="claro"] .logo-icon{
-
-    background:linear-gradient(135deg, #1b5fd9, #0f3f9c);
-
-    color:#ffffff;
-
-}
-
-
-
-/* =====================================================
-   JANELAS E AVISOS
-===================================================== */
-
-html[data-tema="claro"] .modal-fundo,
-html[data-tema="claro"] .vc-fundo,
-html[data-tema="claro"] .vcs-fundo,
-html[data-tema="claro"] .vcp-fundo{
-
-    background:rgba(20, 48, 80, .45);
-
-}
-
-
-html[data-tema="claro"] .vc-aviso,
-html[data-tema="claro"] .vcp-toast,
-html[data-tema="claro"] .vc-modal,
-html[data-tema="claro"] .vcs-modal,
-html[data-tema="claro"] .vcp-modal{
-
-    background:#ffffff;
-
-    color:var(--texto);
-
-    box-shadow:0 18px 44px rgba(20, 60, 100, .18);
-
-}
-
-
-html[data-tema="claro"] .vc-aviso span,
-html[data-tema="claro"] .vc-modal p,
-html[data-tema="claro"] .vcs-modal p{
-
-    color:var(--apagado);
-
-}
-
-
-
-/* =====================================================
-   BOTÃO DE TROCA DE TEMA
+   BOTÃO DE TROCA DE TEMA · sol / lua
+   Fica fixo no canto inferior direito. O script (tema.js
+   embutido no HTML) cria o botão; aqui só o estilo.
 ===================================================== */
 
 .tema-botao{
@@ -1334,6 +1272,8 @@ html[data-tema="claro"] .vcs-modal p{
     display:grid;
 
     place-items:center;
+
+    padding:0;
 
     border:1px solid var(--risco-forte);
 
@@ -1385,15 +1325,6 @@ html[data-tema="claro"] .vcs-modal p{
 }
 
 
-html[data-tema="claro"] .tema-botao{
-
-    color:var(--azul);
-
-    box-shadow:0 10px 26px rgba(20, 60, 100, .16);
-
-}
-
-
 @media (max-width:560px){
 
     .tema-botao{
@@ -1424,5 +1355,160 @@ html[data-tema="claro"] .tema-botao{
         transform:none;
 
     }
+
+}
+
+
+
+/* =====================================================
+   MODO CLARO · Tela inicial
+   O escuro continua padrão. Este bloco só age quando a
+   página está com data-tema="claro" no <html>, o que o
+   script faz ao clicar no botão (ou com Shift + T).
+===================================================== */
+
+html[data-tema="claro"]{
+
+    --tinta:       #eef3f9;
+    --superficie:  #ffffff;
+    --elevado:     #f3f7fc;
+
+    --risco:       rgba(20, 60, 100, .14);
+    --risco-forte: rgba(20, 60, 100, .3);
+
+    --texto:       #0b2036;
+    --apagado:     #46627f;
+    --fraco:       #64809c;
+
+    --azul:        #1b5fd9;
+    --azul-claro:  #1257c7;
+
+    --verde:       #0f9d63;
+    --ambar:       #a86a06;
+    --roxo:        #6d4bd8;
+
+}
+
+
+html[data-tema="claro"] body{
+
+    color:var(--texto);
+
+    background:
+        repeating-linear-gradient(0deg,   rgba(20, 60, 100, .05) 0 1px, transparent 1px 68px),
+        repeating-linear-gradient(90deg,  rgba(20, 60, 100, .05) 0 1px, transparent 1px 68px),
+        linear-gradient(180deg, #f7fafd 0%, var(--tinta) 55%);
+
+    background-attachment:fixed;
+
+}
+
+
+html[data-tema="claro"] nav a:hover{
+
+    color:var(--azul);
+
+}
+
+
+html[data-tema="claro"] .cards{
+
+    background:var(--risco);
+
+}
+
+
+html[data-tema="claro"] .card{
+
+    background:var(--superficie);
+
+}
+
+
+html[data-tema="claro"] .card:hover{
+
+    background:var(--elevado);
+
+}
+
+
+html[data-tema="claro"] .dica{
+
+    background:var(--superficie);
+
+    box-shadow:0 8px 26px rgba(20, 60, 100, .06);
+
+}
+
+
+html[data-tema="claro"] .avatar-box{
+
+    background:
+        linear-gradient(135deg, rgba(27, 95, 217, .14), transparent 70%),
+        var(--elevado);
+
+}
+
+
+html[data-tema="claro"] .hero button:hover{
+
+    color:#ffffff;
+
+}
+
+
+html[data-tema="claro"] .hero button.primary{
+
+    background:var(--azul);
+
+    color:#ffffff;
+
+}
+
+
+html[data-tema="claro"] .hero button.primary:hover{
+
+    background:#0f4bb3;
+
+}
+
+
+html[data-tema="claro"] .card button:hover,
+html[data-tema="claro"] .card:hover button{
+
+    background:var(--azul);
+
+    color:#ffffff;
+
+}
+
+
+/* cores dos selos e ícones, mais escuras para ler no fundo branco */
+html[data-tema="claro"] .green.badge{
+
+    background:rgba(15, 157, 99, .1);
+
+}
+
+
+html[data-tema="claro"] .orange{
+
+    background:rgba(168, 106, 6, .1);
+
+}
+
+
+html[data-tema="claro"] .tema-botao{
+
+    color:var(--azul);
+
+    box-shadow:0 10px 26px rgba(20, 60, 100, .16);
+
+}
+
+
+html[data-tema="claro"] .tema-botao:hover{
+
+    color:#ffffff;
 
 }

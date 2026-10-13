@@ -122,7 +122,7 @@ button:focus-visible,
 /* =====================================================
    CARD PRINCIPAL · grid de checkout
    esquerda: valor e formas de pagamento
-   direita:  resumo, botão e selo de segurança
+   direita:  resumo, botão, termos e selo de segurança
 ===================================================== */
 
 .payment-card{
@@ -345,7 +345,7 @@ header p{
 
     grid-column:1;
 
-    grid-row:4 / 7;
+    grid-row:4 / 8;
 
 }
 
@@ -728,11 +728,21 @@ header p{
 }
 
 
+/* sem o aceite dos termos: botão travado, com cursor de proibido */
+.payment-card:has(#aceitoTermos:not(:checked)) #pagar:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+
+}
+
+
 .safe{
 
     grid-column:2;
 
-    grid-row:6;
+    grid-row:7;
 
     align-self:start;
 
@@ -774,6 +784,325 @@ header p{
 
 
 /* =====================================================
+   TERMOS DA RESERVA · aceite obrigatório
+   Fica logo abaixo do botão de pagar.
+===================================================== */
+
+.termos{
+
+    grid-column:2;
+
+    grid-row:6;
+
+    align-self:start;
+
+    padding:13px 14px;
+
+    border:1px solid var(--linha-cor);
+
+    border-radius:var(--raio);
+
+    background:var(--cartao);
+
+    transition:border-color .2s;
+
+}
+
+
+.termos:has(input:checked){
+
+    border-color:rgba(52, 211, 153, .4);
+
+}
+
+
+.termos-aceite{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:11px;
+
+    cursor:pointer;
+
+}
+
+
+/* a caixa nativa fica escondida, mas continua acessível pelo teclado */
+.termos-aceite input{
+
+    position:absolute;
+
+    width:1px;
+
+    height:1px;
+
+    opacity:0;
+
+    pointer-events:none;
+
+}
+
+
+.caixa{
+
+    width:22px;
+
+    height:22px;
+
+    flex:0 0 auto;
+
+    display:grid;
+
+    place-items:center;
+
+    margin-top:1px;
+
+    border:2px solid var(--linha-forte);
+
+    border-radius:6px;
+
+    background:var(--campo);
+
+    transition:background .18s, border-color .18s;
+
+}
+
+
+.termos-aceite:hover .caixa{
+
+    border-color:var(--azul-claro);
+
+}
+
+
+.termos-aceite input:checked + .caixa{
+
+    border-color:var(--azul);
+
+    background:var(--azul);
+
+}
+
+
+.termos-aceite input:checked + .caixa::after{
+
+    content:"";
+
+    width:6px;
+
+    height:11px;
+
+    margin-top:-2px;
+
+    border:solid #ffffff;
+
+    border-width:0 2.5px 2.5px 0;
+
+    transform:rotate(45deg);
+
+}
+
+
+.termos-aceite input:focus-visible + .caixa{
+
+    outline:3px solid var(--azul-claro);
+
+    outline-offset:2px;
+
+}
+
+
+.termos-texto{
+
+    color:var(--apagado);
+
+    font-size:12px;
+
+    line-height:1.5;
+
+}
+
+
+.termos-texto strong{
+
+    color:var(--texto);
+
+    font-weight:600;
+
+}
+
+
+.termos-aviso{
+
+    margin:9px 0 0 33px;
+
+    color:var(--apagado);
+
+    font-size:11px;
+
+    line-height:1.4;
+
+}
+
+
+.termos:has(input:checked) .termos-aviso{
+
+    display:none;
+
+}
+
+
+.termos-leitura{
+
+    margin-top:10px;
+
+    padding-top:10px;
+
+    border-top:1px solid var(--linha-cor);
+
+}
+
+
+.termos-leitura summary{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    color:var(--azul-claro);
+
+    font-size:12px;
+
+    font-weight:600;
+
+    list-style:none;
+
+    cursor:pointer;
+
+}
+
+
+.termos-leitura summary::-webkit-details-marker{
+
+    display:none;
+
+}
+
+
+.termos-leitura summary::after{
+
+    content:"+";
+
+    font-size:16px;
+
+    line-height:1;
+
+}
+
+
+.termos-leitura[open] summary::after{
+
+    content:"–";
+
+}
+
+
+.termos-leitura summary:hover{
+
+    color:var(--texto);
+
+}
+
+
+.termos-leitura summary:focus-visible{
+
+    outline:3px solid var(--azul-claro);
+
+    outline-offset:3px;
+
+    border-radius:6px;
+
+}
+
+
+.termos-corpo{
+
+    max-height:210px;
+
+    margin-top:10px;
+
+    padding-right:6px;
+
+    overflow-y:auto;
+
+    scrollbar-width:thin;
+
+    scrollbar-color:var(--linha-forte) transparent;
+
+}
+
+
+.termos-corpo h4{
+
+    margin-bottom:6px;
+
+    color:var(--texto);
+
+    font-size:12.5px;
+
+    font-weight:600;
+
+}
+
+
+.termos-corpo p{
+
+    margin-bottom:8px;
+
+    color:var(--apagado);
+
+    font-size:11.5px;
+
+    line-height:1.55;
+
+}
+
+
+.termos-corpo ol{
+
+    padding-left:18px;
+
+}
+
+
+.termos-corpo li{
+
+    margin-bottom:8px;
+
+    color:var(--apagado);
+
+    font-size:11.5px;
+
+    line-height:1.55;
+
+}
+
+
+.termos-corpo li strong{
+
+    color:var(--texto);
+
+    font-weight:600;
+
+}
+
+
+
+/* =====================================================
    RESPONSIVO
 ===================================================== */
 
@@ -792,6 +1121,7 @@ header p{
     .methods,
     .summary,
     #pagar,
+    .termos,
     .safe{
 
         grid-column:1;
@@ -868,7 +1198,9 @@ header p{
 
     .method,
     .summary,
-    .guarantee{
+    .guarantee,
+    .termos,
+    .caixa{
 
         border:1px solid CanvasText;
 
@@ -1215,6 +1547,13 @@ html[data-tema="claro"] #pagar:disabled{
 }
 
 
+html[data-tema="claro"] .payment-card:has(#aceitoTermos:not(:checked)) #pagar:disabled{
+
+    opacity:.45;
+
+}
+
+
 html[data-tema="claro"] .safe{
 
     color:var(--apagado);
@@ -1227,6 +1566,45 @@ html[data-tema="claro"] .safe::before{
     border-color:var(--verde);
 
     box-shadow:inset 0 3px 0 -1px rgba(15, 157, 99, .35);
+
+}
+
+
+
+/* =====================================================
+   TERMOS DA RESERVA
+===================================================== */
+
+html[data-tema="claro"] .termos{
+
+    background:var(--cartao);
+
+    border-color:var(--linha-cor);
+
+}
+
+
+html[data-tema="claro"] .termos:has(input:checked){
+
+    border-color:rgba(15, 157, 99, .45);
+
+}
+
+
+html[data-tema="claro"] .caixa{
+
+    background:#ffffff;
+
+    border-color:var(--linha-forte);
+
+}
+
+
+html[data-tema="claro"] .termos-aceite input:checked + .caixa{
+
+    background:var(--azul);
+
+    border-color:var(--azul);
 
 }
 

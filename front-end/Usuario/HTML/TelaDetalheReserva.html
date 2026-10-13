@@ -31,13 +31,13 @@ VagaConnect | Detalhes da Reserva
 
 
 
-<!-- ================= TOPO ================= -->
+<!-- ================= TOPO + PASSOS ================= -->
 
 
 <header class="header">
 
 
-<button id="voltar">
+<button id="voltar" type="button" aria-label="Voltar e escolher outra vaga" title="Voltar e escolher outra vaga">
 
 ←
 
@@ -45,8 +45,19 @@ VagaConnect | Detalhes da Reserva
 
 
 <h2>
-Detalhes da reserva
+Confirme sua reserva
 </h2>
+
+
+<ol class="passos" aria-label="Passos para reservar">
+
+<li class="feito"><b class="num">✓</b> Vaga escolhida</li>
+
+<li class="atual"><b class="num">2</b> Conferir</li>
+
+<li><b class="num">3</b> Pagamento</li>
+
+</ol>
 
 
 </header>
@@ -55,14 +66,33 @@ Detalhes da reserva
 
 
 
-<!-- ================= ESTACIONAMENTO ================= -->
+<!-- ================= ORIENTAÇÃO ================= -->
+
+
+<p class="dica">
+
+<span>
+<strong>Falta pouco.</strong>
+Confira os dados abaixo. Estando tudo certo, clique em
+<strong>Continuar para pagamento</strong>. O pagamento é o próximo passo.
+</span>
+
+</p>
+
+
+
+
+
+<!-- ================= ONDE: ESTACIONAMENTO + VAGA ================= -->
 
 
 <section class="parking">
 
 
+<div class="parking-dados">
 
-<div>
+
+<span class="rotulo">Você vai estacionar em</span>
 
 
 <h3 id="nomeEstacionamento">
@@ -89,112 +119,43 @@ Carregando...
 </div>
 
 
+<div class="vaga-destaque">
+
+
+<span>Sua vaga</span>
+
+<strong id="numeroVaga">--</strong>
+
+<small id="tipoVaga">--</small>
+
+
+</div>
+
+
 </section>
 
 
 
 
 
-<!-- ================= VAGA ================= -->
+<!-- ================= QUANDO ================= -->
 
 
 <section class="box">
 
 
 <h3>
-Vaga selecionada
+Quando você chega e sai
 </h3>
 
 
-
-<div class="spot-info">
-
-
-
-<div>
-
-
-<h2>
-
-Vaga
-<span id="numeroVaga">
-
---
-
-</span>
-
-</h2>
-
-
-<p id="tipoVaga">
---
+<p class="ajuda">
+Por padrão, a reserva começa agora e dura 4 horas.
+Se precisar de outro dia ou horário, use o botão Alterar.
 </p>
 
 
-</div>
-
-
-</div>
-
-
-
-<div class="linha" style="margin-top:18px;">
-
-<span>
-Tipo da vaga
-</span>
-
-<strong id="tipoVagaDetalhe">
---
-</strong>
-
-</div>
-
-
-
-<div class="linha">
-
-<span>
-Situação
-</span>
-
-<strong id="situacaoVaga">
---
-</strong>
-
-</div>
-
-
-
-<div class="linha" style="margin-bottom:0;">
-
-<span>
-Estacionamento
-</span>
-
-<strong id="estacionamentoVaga">
---
-</strong>
-
-</div>
-
-
-</section>
-
-
-
-
-
-<!-- ================= CHEGADA ================= -->
-
-
-<section class="box">
-
-
-<h3>
-Chegada no local
-</h3>
-
+<div class="grade tres">
 
 
 <div class="linha">
@@ -214,7 +175,7 @@ Data
 <div class="linha">
 
 <span>
-Horário de chegada
+Chegada
 </span>
 
 <strong id="horarioTexto">
@@ -238,38 +199,59 @@ Saída prevista
 </div>
 
 
+</div>
 
-<div class="vehicle">
 
+
+<div class="editar">
+
+
+<label class="campo">
+
+Data de chegada
 
 <input
 type="date"
 id="novaData"
 style="display:none;">
 
+</label>
+
+
+<label class="campo">
+
+Horário de chegada
 
 <input
 type="time"
 id="novoHorario"
 style="display:none;">
 
+</label>
+
+
+<label class="campo">
+
+Saída prevista
 
 <input
 type="time"
 id="novaSaida"
 style="display:none;">
 
+</label>
 
-<button id="alterarHorario">
 
-Alterar
+<button id="alterarHorario" type="button">
+
+Alterar data e horário
 
 </button>
 
 
-<button id="salvarHorario" style="display:none;">
+<button id="salvarHorario" type="button" style="display:none;">
 
-Salvar
+Salvar horário
 
 </button>
 
@@ -290,13 +272,24 @@ Salvar
 
 
 <h3>
-Veículo
+Seu veículo
 </h3>
 
 
 
 <div class="vehicle">
 
+
+<div class="car-icon" aria-hidden="true">
+
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+<circle cx="7" cy="17" r="2"/>
+<path d="M9 17h6"/>
+<circle cx="17" cy="17" r="2"/>
+</svg>
+
+</div>
 
 
 <div>
@@ -319,9 +312,9 @@ Carregando...
 </div>
 
 
-<button id="alterarVeiculo">
+<button id="alterarVeiculo" type="button">
 
-Alterar
+Trocar veículo
 
 </button>
 
@@ -355,16 +348,86 @@ Escolha um veículo:
 
 
 
-<!-- ================= RESUMO ================= -->
+<!-- ================= QUANTO CUSTA ================= -->
 
 
-<section class="box">
+<section class="values">
 
 
-<h3>
-Resumo da reserva
-</h3>
+<div>
 
+<span>
+Tarifa
+</span>
+
+<strong id="valorTarifa">
+--
+</strong>
+
+</div>
+
+
+
+<div>
+
+<span>
+Tempo reservado
+</span>
+
+<strong id="valorTempo">
+--
+</strong>
+
+</div>
+
+
+
+<div>
+
+<span>
+Total a pagar
+</span>
+
+<strong id="valorTotal">
+--
+</strong>
+
+</div>
+
+
+</section>
+
+
+<p class="aviso-minuto">
+A vaga é cobrada por minuto. Você paga antecipado o tempo marcado e,
+se cancelar, os minutos que não usou voltam para você.
+</p>
+
+
+<button id="pagamento">
+
+Continuar para pagamento
+
+</button>
+
+
+
+
+
+<!-- ================= RESUMO COMPLETO (recolhido) ================= -->
+
+
+<details class="resumo-completo">
+
+
+<summary>
+
+Ver resumo completo da reserva
+
+</summary>
+
+
+<div class="grade dois">
 
 
 <div class="linha">
@@ -402,6 +465,34 @@ Vaga
 </span>
 
 <strong id="resumoVaga">
+--
+</strong>
+
+</div>
+
+
+
+<div class="linha">
+
+<span>
+Tipo da vaga
+</span>
+
+<strong id="tipoVagaDetalhe">
+--
+</strong>
+
+</div>
+
+
+
+<div class="linha">
+
+<span>
+Situação da vaga
+</span>
+
+<strong id="situacaoVaga">
 --
 </strong>
 
@@ -479,7 +570,7 @@ Tempo reservado
 
 
 
-<div class="linha" style="margin-bottom:0;">
+<div class="linha">
 
 <span>
 Valor da vaga
@@ -492,86 +583,22 @@ Valor da vaga
 </div>
 
 
-</section>
-
-
-
-
-
-<!-- ================= VALORES ================= -->
-
-
-<section class="values">
-
-
-<div>
-
-<span>
-Tarifa
-</span>
-
-<strong id="valorTarifa">
---
-</strong>
-
 </div>
 
 
-
-<div>
-
-<span>
-Tempo reservado
-</span>
-
-<strong id="valorTempo">
---
-</strong>
-
-</div>
+</details>
 
 
 
-<div>
+<!-- campos que o script preenche, mas que repetiriam algo já visível -->
 
-<span>
-Valor da vaga
-</span>
+<div hidden>
 
-<strong id="valorVaga">
---
-</strong>
+<strong id="estacionamentoVaga"></strong>
+
+<strong id="valorVaga"></strong>
 
 </div>
-
-
-
-<div>
-
-<span>
-Total agora
-</span>
-
-<strong id="valorTotal">
---
-</strong>
-
-</div>
-
-
-</section>
-
-
-<p class="aviso-minuto">
-A vaga é cobrada por minuto (preço da hora ÷ 60). Você antecipa o tempo marcado e, se cancelar, os minutos não usados voltam.
-</p>
-
-
-<button id="pagamento">
-
-Continuar para pagamento
-
-</button>
 
 
 </main>
@@ -1206,9 +1233,18 @@ alterarVeiculo.onclick = ()=>{
         opcao.className = "opcaoCarro";
 
         opcao.innerHTML = `
-            🚗 ${carro.modelo}
-            <br>
-            <small>${carro.placacarro}</small>
+            <span class="opcao-icone" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+                    <circle cx="7" cy="17" r="2"/>
+                    <path d="M9 17h6"/>
+                    <circle cx="17" cy="17" r="2"/>
+                </svg>
+            </span>
+            <span class="opcao-texto">
+                ${carro.modelo}
+                <small>${carro.placacarro}</small>
+            </span>
         `;
 
 

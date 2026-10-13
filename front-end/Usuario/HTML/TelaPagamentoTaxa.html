@@ -300,9 +300,97 @@ Pagar R$ 25,00
 
 
 
-<p class="safe">
-A vaga é cobrada por minuto. Se cancelar, o tempo que você não usar volta como reembolso.
+
+
+<!-- TERMOS DA RESERVA -->
+
+
+<div class="termos">
+
+
+<label class="termos-aceite">
+
+<input type="checkbox" id="aceitoTermos">
+
+<span class="caixa" aria-hidden="true"></span>
+
+<span class="termos-texto">
+Li e aceito os <strong>termos da reserva</strong>
+(chegada, desistência e reembolso).
+</span>
+
+</label>
+
+
+<p class="termos-aviso">
+Marque a caixa acima para liberar o pagamento.
 </p>
+
+
+<details class="termos-leitura">
+
+
+<summary>
+Ler os termos completos
+</summary>
+
+
+<div class="termos-corpo">
+
+
+<h4>
+Termos da Reserva e Política de Desistência
+</h4>
+
+
+<p>
+Ao efetuar o pagamento, o USUÁRIO declara estar ciente e de acordo
+com as condições abaixo.
+</p>
+
+
+<ol>
+
+<li>
+<strong>Do prazo de chegada.</strong>
+O USUÁRIO deverá comparecer ao estacionamento e confirmar sua presença
+no local dentro do período de chegada estabelecido nesta reserva.
+</li>
+
+<li>
+<strong>Da desistência.</strong>
+Caso o USUÁRIO desista da reserva dentro do período estabelecido para
+a sua chegada, terá direito ao reembolso de 50% (cinquenta por cento)
+do valor pago pela reserva.
+</li>
+
+<li>
+<strong>Do não comparecimento.</strong>
+Caso o USUÁRIO não confirme sua presença no estacionamento dentro do
+período estabelecido e não comunique a desistência, a reserva será
+considerada não cumprida e a vaga será novamente disponibilizada
+a outros usuários.
+</li>
+
+<li>
+<strong>Do aceite.</strong>
+A marcação da caixa "Li e aceito" representa a concordância expressa
+do USUÁRIO com estes termos, sendo condição indispensável para a
+conclusão do pagamento.
+</li>
+
+</ol>
+
+
+</div>
+
+
+</details>
+
+
+</div>
+
+
 
 
 
@@ -336,6 +424,8 @@ const botaoPagar = document.getElementById("pagar");
 
 const botaoVoltar = document.getElementById("voltar");
 
+const aceitoTermos = document.getElementById("aceitoTermos");
+
 
 const valorTotalTopo = document.getElementById("valorTotalTopo");
 
@@ -348,6 +438,26 @@ const resumoTempo = document.getElementById("resumoTempo");
 const resumoGarantia = document.getElementById("resumoGarantia");
 
 const resumoTotal = document.getElementById("resumoTotal");
+
+
+
+
+// =====================================================
+// TERMOS · o pagamento só é liberado com o aceite
+// =====================================================
+
+
+function liberarPagamento(){
+
+    botaoPagar.disabled = !aceitoTermos.checked;
+
+}
+
+
+aceitoTermos.addEventListener("change", liberarPagamento);
+
+
+liberarPagamento();
 
 
 
@@ -733,6 +843,18 @@ async function gravarReserva(){
 
 
 botaoPagar.onclick = async ()=>{
+
+
+    // Sem o aceite dos termos não segue para o pagamento
+    if(!aceitoTermos.checked){
+
+        alert("Para continuar, leia e aceite os termos da reserva.");
+
+        aceitoTermos.focus();
+
+        return;
+
+    }
 
 
     botaoPagar.disabled = true;
